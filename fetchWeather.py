@@ -16,6 +16,8 @@
 # Station ID lookup can be found here: ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.txt
 # 725030-14732 = LGA
 
+
+## OUTPUT: CSV file with all datapoints for specified years and station
 ###########################################################
 
 
@@ -44,7 +46,7 @@ def fetch_weather_data(url):
     return weather_hist
 
 
-# Get all weather data for specified station and years and parse into DataFrame. Returns one DF with all datapoints
+# Get all weather data for specified station and years and parse into DataFrame. Returns a CSV file with all data points
     
 def parse_data(start_year, end_year, stationID):
     import pandas as pd
