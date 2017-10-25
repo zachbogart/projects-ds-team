@@ -1,7 +1,15 @@
 from scripts.twitter import mongoToJson, twitterAPI
 
-twitterAPI.saveTweets(20, ['deadpool', 'spider-man', 'iron man'], 'marvelComics')
-mongoToJson.exportMongoCollectionToJson('twitterData', 'marvelComics', 'marvelComics')
+nycBoundingBox = [
+            -74.026675,
+            40.683935,
+            -73.910408,
+            40.877483
+        ]
+twitterAPI.saveTweets(5, nycBoundingBox, 'manhattan')
+mongoToJson.exportMongoCollectionToJson('twitterData', 'manhattan', 'manhattan')
 
-# twitterAPI.saveTweets(3, ['#NationalFoodDay'], 'nationalFoodDay')
-# mongoToJson.exportMongoCollectionToJson('twitterData', 'nationalFoodDay', 'nationalFoodDay')
+# twitterAPI.getTweetsAndSaveToJson()
+
+# twitterAPI.getPlaceID()
+# twitterAPI.getNYCTweets()
