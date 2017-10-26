@@ -1,24 +1,17 @@
-from scripts.twitter import mongoToJson, twitterAPI
-from weather import fetchWeather
-from scripts.machineLearning import train
 
-# nycBoundingBox = [
-#             -74.026675,
-#             40.683935,
-#             -73.910408,
-#             40.877483
-#         ]
-# twitterAPI.saveTweets(5, nycBoundingBox, 'manhattan')
-# mongoToJson.exportMongoCollectionToJson('twitterData', 'manhattan', 'manhattan')
+# coding: utf-8
 
-# twitterAPI.getTweetsAndSaveToJson()
-
-# twitterAPI.getPlaceID()
-# twitterAPI.getNYCTweets()
+# In[ ]:
 
 
-# fetchWeather.parse_data(2017, 2017, 725030)
-# fetchWeather.parse_data(2017, 2017, "725030-14732")
+from twitter import mongoToJson, twitterAPI
 
+nycBoundingBox = [
+            -74.026675,
+            40.683935,
+            -73.910408,
+            40.877483
+        ]
+twitterAPI.saveTweets(2000, 'manhattan', nycBoundingBox)
+mongoToJson.exportMongoCollectionToJson('twitterData', 'manhattan', 'manhattan')
 
-train.doMachineLearning("../data/trainingData.json")
