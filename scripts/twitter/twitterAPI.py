@@ -1,4 +1,10 @@
-# -*- coding: utf-8 -*-
+
+# coding: utf-8
+
+# In[ ]:
+
+
+
 
 import tweepy
 from pymongo import MongoClient
@@ -14,14 +20,20 @@ auth1.set_access_token('2847047537-wwYPjhsb78FltOxFk8nFvvCtWD6zCVs9JE9qghh',
 api = tweepy.API(auth1)
 
 class StreamListener(tweepy.StreamListener):
+    print 'About to connect to Mongo'
     mongo = MongoClient('localhost', 27017)
     mongo_db = mongo['twitterData']
-    mongo_collection = mongo_db['Default']
+    mongo_collection = mongo_db['theseAreTweets']
+    print 'Connection made to:'
+    print 'db name: ' + mongo_db.name
+    print 'collection name: ' + mongo_collection.name
 
+    
     status_wrapper = TextWrapper(width=140, initial_indent='', subsequent_indent='')
     numTweets = 2
 
     def setMongoCollection(self, mongoCollectionName):
+        print mongoCollectionName
         self.mongo_collection = self.mongo_db[mongoCollectionName]
 
     def on_status(self, status):
@@ -65,10 +77,15 @@ class StreamListener(tweepy.StreamListener):
 
 def saveTweets(numTweets, mongoCollectionName, locationCoordinates):
     try:
+        print 'Ready to save some tweets!'
         l = StreamListener()
+        print 'here1'
         l.numTweets = numTweets
-        l.setMongoCollection(mongoCollectionName)
+        print 'here2'
+        l.setMongoCollection(str(mongoCollectionName))
+        print 'here3'
         streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
+        print 'here4'
         place_id = '01a9a39529b27f36'
 
         streamer.filter(locations=locationCoordinates)
@@ -118,3 +135,4 @@ def getNYCTweets():
 #
 #         # Display how many tweets we have collected
 #         print("Downloaded {0} tweets".format(tweetCount))
+
