@@ -4,6 +4,7 @@ import tweepy
 from pymongo import MongoClient
 from textwrap import TextWrapper
 from tweepy.utils import import_simplejson
+import datetime
 import jsonpickle
 
 json = import_simplejson()
@@ -64,7 +65,8 @@ class StreamListener(tweepy.StreamListener):
                     'friends_count': status.user.friends_count,
                     'created_at': status.created_at,
                     'message_id': status.id,
-                    'location': place
+                    'location': place,
+                    'local_datetime': datetime.datetime.now()
                 })
                 count = self.mongo_collection.count()
                 print 'tweets saved: %s', count
