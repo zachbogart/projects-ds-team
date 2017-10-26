@@ -18,7 +18,6 @@ class StreamListener(tweepy.StreamListener):
     mongo_db = mongo['twitterData']
     mongo_collection = mongo_db['Default']
 
-    count = 0
     status_wrapper = TextWrapper(width=140, initial_indent='', subsequent_indent='')
     numTweets = 2
 
@@ -30,6 +29,7 @@ class StreamListener(tweepy.StreamListener):
         tempB = status.retweeted
         tempC = status.user.lang
         tempD = status.geo
+        count = 0
         if status.place is not None:
             print status.place.name
         if status.place is not None and status.place.name == "Manhattan" and (

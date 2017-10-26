@@ -8,6 +8,9 @@ def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFi
     mongo = MongoClient('localhost', 27017)
     mongo_db = mongo[mongoDatabaseName]
     mongo_collection = mongo_db[mongoCollectionName]
+    print 'Database Connection Made'
+    print 'db name: ' + mongo_db.name
+    print 'collection name: ' + mongo_collection.name
 
     results = mongo_collection.find({})
     resultsJson = json_util.dumps(results)
