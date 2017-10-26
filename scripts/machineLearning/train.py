@@ -53,7 +53,7 @@ def doMachineLearning(dataFilePath):
     testingData['sentimentLabel'] = testingData['sentimentScore'].apply(toLabelName)
 
     randomForestClassifier = RandomForestClassifier(random_state=0)
-    randomForestClassifier.fit(trainingData[featureColumnNames], trainingData['sentimentScore'])
+    randomForestClassifier.fit(features, trainingData['sentimentScore'])
 
     predictions = randomForestClassifier.predict(testingData[featureColumnNames])
     print ''

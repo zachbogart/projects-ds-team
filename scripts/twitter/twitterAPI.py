@@ -1,10 +1,4 @@
-
-# coding: utf-8
-
-# In[ ]:
-
-
-
+# -*- coding: utf-8 -*-
 
 import tweepy
 from pymongo import MongoClient
@@ -28,13 +22,19 @@ class StreamListener(tweepy.StreamListener):
     print 'db name: ' + mongo_db.name
     print 'collection name: ' + mongo_collection.name
 
-    
     status_wrapper = TextWrapper(width=140, initial_indent='', subsequent_indent='')
     numTweets = 2
+    placeName = "Manhattan"
 
     def setMongoCollection(self, mongoCollectionName):
         print mongoCollectionName
         self.mongo_collection = self.mongo_db[mongoCollectionName]
+
+    def setPlaceName(self, placeName):
+        self.placeName = placeName
+
+    def setNumTweets(self, numTweets):
+        self.numTweets = numTweets
 
     def on_status(self, status):
         tempA = self.status_wrapper.fill(status.text)
@@ -44,7 +44,7 @@ class StreamListener(tweepy.StreamListener):
         count = 0
         if status.place is not None:
             print status.place.name
-        if status.place is not None and status.place.name == "Manhattan" and (
+        if status.place is not None and status.place.name == self.placeName and (
                     (('en' in tempC) and (tempB is False)) and (not ('RT') in tempA[:2]) and (
                         ((('http' or 'www') in tempA) and ((' ') in tempA)) or (
                             not ('http' or 'www') in tempA)) and tempA is not None):
@@ -75,17 +75,13 @@ class StreamListener(tweepy.StreamListener):
                 raise Exception("Ending stream")
 
 
-def saveTweets(numTweets, mongoCollectionName, locationCoordinates):
+def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName):
     try:
-        print 'Ready to save some tweets!'
         l = StreamListener()
-        print 'here1'
-        l.numTweets = numTweets
-        print 'here2'
-        l.setMongoCollection(str(mongoCollectionName))
-        print 'here3'
+        l.setPlaceName(locationName)
+        l.setNumTweets(numTweets)
+        l.setMongoCollection(mongoCollectionName)
         streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
-        print 'here4'
         place_id = '01a9a39529b27f36'
 
         streamer.filter(locations=locationCoordinates)
@@ -97,8 +93,8 @@ def saveTweets(numTweets, mongoCollectionName, locationCoordinates):
         print str(e)
 
 
-def getPlaceID():
-    places = api.geo_search(query="Manhattan", granularity="city")
+def getPlaceID(placeName):
+    places = api.geo_search(query=placeName, granularity="city")
     place_id = places[0].id
     print places
     print place_id
@@ -135,4 +131,3 @@ def getNYCTweets():
 #
 #         # Display how many tweets we have collected
 #         print("Downloaded {0} tweets".format(tweetCount))
-
