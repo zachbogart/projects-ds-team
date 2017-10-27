@@ -5,7 +5,6 @@ import twitter.twitterAPI as twitterAPI
 from machineLearning import train
 import timeit
 
-
 # nycBoundingBox = [
 #             -74.026675,
 #             40.683935,

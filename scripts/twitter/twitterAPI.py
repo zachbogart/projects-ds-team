@@ -64,9 +64,8 @@ class StreamListener(tweepy.StreamListener):
         createdAt = status.created_at
         messageId = status.id
 
-        if place is not None:
-            print 'Place name: ', place.name
         if self.isTweetUsable(place, userLanguage, isRetweet, body, urls):
+
             self.printTweetDetails(body, place)
             try:
                 self.mongo_collection.insert({
@@ -95,13 +94,8 @@ def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName
         l.setNumTweets(numTweets)
         l.setMongoCollection(mongoCollectionName)
         streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
-        place_id = '01a9a39529b27f36'
 
         streamer.filter(locations=locationCoordinates)
-        # streamer.filter(None, "q=place:%s" % place_id)
-        # streamer.filter(None, "place:%s" % place_id)
-        # streamer.filter(None, "place:%s" % place_id)
-        # streamer.filter(None, searchTerms)
     except TweetLimitReachedException, (e):
         print str(e)
 
@@ -109,40 +103,12 @@ def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName
 def getPlaceID(placeName):
     places = api.geo_search(query=placeName, granularity="city")
     place_id = places[0].id
-    print places
-    print place_id
-    print places[0].bounding_box.coordinates
-    # New York, NY == 27485069891a7938
-    # Manhattan == 01a9a39529b27f36
-
+    return place_id
 
 def getNYCTweets():
     place_id = '01a9a39529b27f36'
     tweets = api.search(q="place:%s" % place_id, count=100)
     print "We found %s tweets" % str(len(tweets))
-    # for tweet in tweets:
-    #     print tweet.text + " | " + tweet.place.name if tweet.place else "Undefined place"
-
-# def getTweetsAndSaveToJson():
-#     tweetCount = 0
-#     searchQuery = "*"
-#     maxTweets = 10
-#
-#     # Open a text file to save the tweets to
-#     with open('../data/manhattan2.json', 'wb') as f:
-#
-#         # Tell the Cursor method that we want to use the Search API (api.search)
-#         # Also tell Cursor our query, and the maximum number of tweets to return
-#         for tweet in tweepy.Cursor(api.search, q=searchQuery).items(maxTweets):
-#
-#             # Verify the tweet has place info before writing (It should, if it got past our place filter)
-#             if tweet.place is not None:
-#                 # Write the JSON format to the text file, and add one to the number of tweets we've collected
-#                 f.write(jsonpickle.encode(tweet._json, unpicklable=False) + '\n')
-#                 tweetCount += 1
-#
-#         # Display how many tweets we have collected
-#         print("Downloaded {0} tweets".format(tweetCount))
 
 class TweetLimitReachedException(Exception):
    """Use this to end the stream"""
