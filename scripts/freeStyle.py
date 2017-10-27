@@ -12,8 +12,8 @@ from scripts.utils import utils
 # twitterAPI.saveTweets(5, nycBoundingBox, 'manhattan', "Manhattan")
 # mongoToJson.exportMongoCollectionToJson('twitterData', 'manhattan', 'manhattan')
 
-with open(utils.makeDataFilePath('places.json')) as data_file:
-    places = json.load(data_file)
+# with open(utils.makeDataFilePath('places.json')) as data_file:
+#     places = json.load(data_file)
 
 # twitterAPI.getTweetsAndSaveToJson()
 
@@ -41,12 +41,12 @@ with open(utils.makeDataFilePath('places.json')) as data_file:
 # ________________________
 #
 # Get twitter data for city
-city = places[0]
-cityName = city["name"]
-cityProperName = city["properName"]
-cityBoundingBox = city["boundingBox"]
-twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
-pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
+# city = places[0]
+# cityName = city["name"]
+# cityProperName = city["properName"]
+# cityBoundingBox = city["boundingBox"]
+# twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
+# pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
 #
 # Enrich with weather data
 # weather.enrichWithWeather(pathToJson, cityName)
@@ -58,3 +58,30 @@ pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName
 # results = train.doMachineLearning(pathToJson)
 #
 #
+
+with open(utils.makeDataFilePath('places.json')) as data_file:
+    places = json.load(data_file)
+
+def getNYData():
+    city = places[0]
+    cityName = city["name"]
+    cityProperName = city["properName"]
+    cityBoundingBox = city["boundingBox"]
+    twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
+    pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
+
+def getSFData():
+    city = places[1]
+    cityName = city["name"]
+    cityProperName = city["properName"]
+    cityBoundingBox = city["boundingBox"]
+    twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
+    pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
+
+def getDCData():
+    city = places[2]
+    cityName = city["name"]
+    cityProperName = city["properName"]
+    cityBoundingBox = city["boundingBox"]
+    twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
+    pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
