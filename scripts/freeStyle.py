@@ -67,5 +67,5 @@ def acquireData(placesIndex):
     cityName = city["name"]
     cityProperName = city["properName"]
     cityBoundingBox = city["boundingBox"]
-    twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
+    twitterAPI.saveTweets(1000000, cityName, cityBoundingBox, cityProperName)
     pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
