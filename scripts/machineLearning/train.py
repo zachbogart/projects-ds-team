@@ -56,7 +56,13 @@ def doMachineLearning(dataFilePath):
     print('Number of observations in the training data:', len(trainData))
     print('Number of observations in the test data:', len(testData))
 
-    randomForestClassifier = RandomForestClassifier(random_state=0)
+    nEstimators = 500
+    maxFeatures = "auto"
+    criterion = "gini"
+    randomForestClassifier = RandomForestClassifier(random_state=0,
+                                                    n_estimators=nEstimators,
+                                                    max_features=maxFeatures,
+                                                    criterion=criterion)
     randomForestClassifier.fit(trainData, trainLabels)
 
     predictions = randomForestClassifier.predict(testData)

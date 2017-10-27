@@ -1,4 +1,5 @@
 # from scripts.twitter import mongoToJson, twitterAPI
+from scripts.twitter import twitterAPI, mongoToJson
 from weather import fetchWeather
 from scripts.machineLearning import train
 import timeit
@@ -37,7 +38,7 @@ places = [
 # fetchWeather.parse_data(2017, 2017, "725030-14732")
 
 
-train.doMachineLearning("../data/trainingData.json")
+# train.doMachineLearning("../data/trainingData.json")
 
 # def learningFunction():
 #     return train.doMachineLearning("../data/trainingData.json")
@@ -53,12 +54,12 @@ train.doMachineLearning("../data/trainingData.json")
 # ________________________
 #
 # Get twitter data for city
-# city = places[0]
-# cityName = city["name"]
-# cityProperName = city["properName"]
-# cityBoundingBox = city["boundingBox"]
-# twitterAPI.saveTweets(5000000, cityName, cityBoundingBox, cityProperName)
-# pathToJson = mongoToJson.exportMongoCollectionToJson('twitterData', cityName, cityName)
+city = places[0]
+cityName = city["name"]
+cityProperName = city["properName"]
+cityBoundingBox = city["boundingBox"]
+twitterAPI.saveTweets(2, cityName, cityBoundingBox, cityProperName)
+pathToJson = mongoToJson.exportMongoCollectionToJson('twitterData', cityName, cityName)
 #
 # Enrich with weather data
 # weather.enrichWithWeather(pathToJson, cityName)
