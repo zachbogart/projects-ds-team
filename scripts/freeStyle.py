@@ -62,27 +62,10 @@ from scripts.utils import utils
 with open(utils.makeDataFilePath('places.json')) as data_file:
     places = json.load(data_file)
 
-def getNYData():
-    city = places[0]
+def acquireData(placesIndex):
+    city = places[placesIndex]
     cityName = city["name"]
     cityProperName = city["properName"]
     cityBoundingBox = city["boundingBox"]
     twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
     pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
-
-def getSFData():
-    city = places[1]
-    cityName = city["name"]
-    cityProperName = city["properName"]
-    cityBoundingBox = city["boundingBox"]
-    twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
-    pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
-
-def getDCData():
-    city = places[2]
-    cityName = city["name"]
-    cityProperName = city["properName"]
-    cityBoundingBox = city["boundingBox"]
-    twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
-    pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
-

@@ -47,7 +47,7 @@ class StreamListener(tweepy.StreamListener):
 
     def printTweetDetails(self, body, place):
         print ''
-        print 'Saving tweet from: ', place
+        print 'Saving tweet from: ', place.name
         print body
 
     def on_status(self, status):
