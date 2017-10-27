@@ -86,4 +86,3 @@ def getDCData():
     twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
     pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
 
-getSFData()

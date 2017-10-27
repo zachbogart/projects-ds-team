@@ -3,7 +3,7 @@ import os
 from bson import json_util
 from pymongo import MongoClient
 
-from definitions import ROOT_DIRECTORY, DATA_DIRECTORY
+from scripts.utils.definitions import ROOT_DIRECTORY, DATA_DIRECTORY
 
 
 def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFileName):
