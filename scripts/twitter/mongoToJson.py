@@ -26,5 +26,6 @@ def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFi
     obj = open(fullPath, 'wb')
     obj.write(resultsJson)
     obj.close
+    return fullPath
 #     print 'File saved at path: ' + fullPath
 

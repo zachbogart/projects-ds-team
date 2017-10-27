@@ -5,8 +5,6 @@ from pymongo import MongoClient
 from textwrap import TextWrapper
 from tweepy.utils import import_simplejson
 import datetime
-import jsonpickle
-
 json = import_simplejson()
 
 auth1 = tweepy.auth.OAuthHandler('eOihmPsLf6q0ro03OFyDExyaH', 'XfOAN3SYME0vCRaaUqCsbbxUxNR88JdRKjLswqyGuZZ7fdfeB3')
