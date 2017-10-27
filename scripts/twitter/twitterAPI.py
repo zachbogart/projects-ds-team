@@ -5,12 +5,14 @@ from pymongo import MongoClient
 from textwrap import TextWrapper
 from tweepy.utils import import_simplejson
 import datetime
+
 json = import_simplejson()
 
 auth1 = tweepy.auth.OAuthHandler('eOihmPsLf6q0ro03OFyDExyaH', 'XfOAN3SYME0vCRaaUqCsbbxUxNR88JdRKjLswqyGuZZ7fdfeB3')
 auth1.set_access_token('2847047537-wwYPjhsb78FltOxFk8nFvvCtWD6zCVs9JE9qghh',
                        '4fjuf9awSDlNT3AsU7FZFu9AzQcIysKfX0b5IOetxkBr7')
 api = tweepy.API(auth1)
+
 
 class StreamListener(tweepy.StreamListener):
     print 'About to connect to Mongo'
@@ -26,7 +28,7 @@ class StreamListener(tweepy.StreamListener):
     placeName = "Manhattan"
 
     def setMongoCollection(self, mongoCollectionName):
-        print mongoCollectionName
+        print 'Connecting to new mongo collection with name: ', mongoCollectionName
         self.mongo_collection = self.mongo_db[mongoCollectionName]
 
     def setPlaceName(self, placeName):
@@ -35,35 +37,46 @@ class StreamListener(tweepy.StreamListener):
     def setNumTweets(self, numTweets):
         self.numTweets = numTweets
 
+    def isTweetUsable(self, place, userLanguage, isRetweet, body, urls):
+        return place is not None \
+               and place.name == self.placeName \
+               and 'en' in userLanguage \
+               and isRetweet is False \
+               and body is not None \
+            # and len(urls) == 0
+
+    def printTweetDetails(self, body, place):
+        print ''
+        print 'Saving tweet from: ', place
+        print body
+
     def on_status(self, status):
-        tempA = self.status_wrapper.fill(status.text)
-        tempB = status.retweeted
-        tempC = status.user.lang
-        tempD = status.geo
+
+        body = self.status_wrapper.fill(status.text)
+        isRetweet = status.retweeted
+        userLanguage = status.user.lang
+        urls = status.entities['urls']
         count = 0
-        if status.place is not None:
-            print status.place.name
-        if status.place is not None and status.place.name == self.placeName and (
-                    (('en' in tempC) and (tempB is False)) and (not ('RT') in tempA[:2]) and (
-                        ((('http' or 'www') in tempA) and ((' ') in tempA)) or (
-                            not ('http' or 'www') in tempA)) and tempA is not None):
+        place = status.place
+        followerCount = status.user.followers_count
+        screenName = status.author.screen_name
+        friendCount = status.user.friends_count
+        createdAt = status.created_at
+        messageId = status.id
+
+        if place is not None:
+            print 'Place name: ', place.name
+        if self.isTweetUsable(place, userLanguage, isRetweet, body, urls):
+            self.printTweetDetails(body, place)
             try:
-                body = self.status_wrapper.fill(status.text)
-                place = status.place.name
-                print ''
-                print ''
-                print body
-                print ''
-                print place
-                print ''
                 self.mongo_collection.insert({
                     'body': body,
-                    'followers': status.user.followers_count,
-                    'screen_name': status.author.screen_name,
-                    'friends_count': status.user.friends_count,
-                    'created_at': status.created_at,
-                    'message_id': status.id,
-                    'location': place,
+                    'followers': followerCount,
+                    'screen_name': screenName,
+                    'friends_count': friendCount,
+                    'created_at': createdAt,
+                    'message_id': messageId,
+                    'location': place.name,
                     'local_datetime': datetime.datetime.now()
                 })
                 count = self.mongo_collection.count()
@@ -72,7 +85,7 @@ class StreamListener(tweepy.StreamListener):
                 print('Exception reached: ' + str(e))
                 pass
             if count >= self.numTweets:
-                raise Exception("Ending stream")
+                raise TweetLimitReachedException("Ending stream")
 
 
 def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName):
@@ -89,7 +102,7 @@ def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName
         # streamer.filter(None, "place:%s" % place_id)
         # streamer.filter(None, "place:%s" % place_id)
         # streamer.filter(None, searchTerms)
-    except Exception, (e):
+    except TweetLimitReachedException, (e):
         print str(e)
 
 
@@ -109,7 +122,6 @@ def getNYCTweets():
     print "We found %s tweets" % str(len(tweets))
     # for tweet in tweets:
     #     print tweet.text + " | " + tweet.place.name if tweet.place else "Undefined place"
-
 
 # def getTweetsAndSaveToJson():
 #     tweetCount = 0
@@ -131,3 +143,7 @@ def getNYCTweets():
 #
 #         # Display how many tweets we have collected
 #         print("Downloaded {0} tweets".format(tweetCount))
+
+class TweetLimitReachedException(Exception):
+   """Use this to end the stream"""
+   pass

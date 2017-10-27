@@ -21,7 +21,7 @@ def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFi
     results = mongo_collection.find({})
     resultsJson = json_util.dumps(results)
 
-    pathToDataFolder = '/home/rij2105/twitterDataJson/'
+    pathToDataFolder = '../data/'
     fullPath = pathToDataFolder + resultFileName + '.json'
     obj = open(fullPath, 'wb')
     obj.write(resultsJson)
