@@ -1,12 +1,9 @@
+import os
 
-# coding: utf-8
-
-# In[ ]:
-
-
-from pymongo import MongoClient
 from bson import json_util
-import json
+from pymongo import MongoClient
+
+from definitions import ROOT_DIRECTORY, DATA_DIRECTORY
 
 
 def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFileName):
@@ -21,11 +18,14 @@ def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFi
     results = mongo_collection.find({})
     resultsJson = json_util.dumps(results)
 
-    pathToDataFolder = '../data/'
-    fullPath = pathToDataFolder + resultFileName + '.json'
+    fullPath = makeDataFilePath(resultFileName + '.json')
     obj = open(fullPath, 'wb')
     obj.write(resultsJson)
     obj.close
     return fullPath
-#     print 'File saved at path: ' + fullPath
 
+def makeFullPath(pathFromScripts):
+    return os.path.join(ROOT_DIRECTORY, pathFromScripts)
+
+def makeDataFilePath(dataFileName):
+    return DATA_DIRECTORY + '/' + dataFileName
