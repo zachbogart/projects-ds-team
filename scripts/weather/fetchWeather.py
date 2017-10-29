@@ -67,3 +67,4 @@ def parse_data(start_year, end_year, stationID):
 
     full_hist.columns = col_names
     full_hist.to_csv(str(stationID)+"_"+str(start_year)+"-"+str(end_year)+"_data.csv")
+    return full_hist
