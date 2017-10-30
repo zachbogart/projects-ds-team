@@ -1,7 +1,8 @@
 import json
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingRegressor, VotingClassifier, BaggingClassifier, \
+    ExtraTreesClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
@@ -65,30 +66,53 @@ def doMachineLearning(dataFilePath):
                                                     criterion=criterion)
     randomForestClassifier.fit(trainData, trainLabels)
 
-    predictions = randomForestClassifier.predict(testData)
-    print ''
-    print 'predictions: '
-    print predictions
+    baggingClassifier = BaggingClassifier()
+    baggingClassifier.fit(trainData, trainLabels)
 
-    trainAccuracy = accuracy_score(trainLabels, randomForestClassifier.predict(trainData))
+    extraTreesClassifier = ExtraTreesClassifier()
+    extraTreesClassifier.fit(trainData, trainLabels)
+
+    results = []
+
+    results.append(runClassifier(randomForestClassifier, testData, testLabels, trainData, trainLabels))
+    results.append(runClassifier(baggingClassifier, testData, testLabels, trainData, trainLabels))
+    results.append(runClassifier(extraTreesClassifier, testData, testLabels, trainData, trainLabels))
+
+    printReleventResults(results)
+    return results
+
+
+def printReleventResults(results):
+    for result in results:
+        print ''
+        print result['classifierType']
+        print 'Train Accuracy: ', result['trainAccuracy']
+        print 'Test Accuracy: ', result['testAccuracy']
+        print 'Confusion Matrix: '
+        print result['confusionMatrix']
+
+
+def runClassifier(classifier, testData, testLabels, trainData, trainLabels):
+    result = {}
+
+    result['classifierType'] = type(classifier)
+
+    predictions = classifier.predict(testData)
+    result['predictions'] = predictions
+
+    trainAccuracy = accuracy_score(trainLabels, classifier.predict(trainData))
     testAccuracy = accuracy_score(testLabels, predictions)
-    print ''
-    print "Train Accuracy: ", trainAccuracy
-    print "Test Accuracy: ", testAccuracy
+    result['trainAccuracy'] = trainAccuracy
+    result['testAccuracy'] = testAccuracy
 
-    advancedPredictions = randomForestClassifier.predict_proba(testData)
-    print ''
-    print 'advanced predictions: '
-    print advancedPredictions
+    advancedPredictions = classifier.predict_proba(testData)
+    result['advancedPredictions'] = advancedPredictions
 
     confusionMatrix = confusion_matrix(testLabels, predictions)
-    print ''
-    print 'confusionMatrix: '
-    print confusionMatrix
+    result['confusionMatrix'] = confusionMatrix
 
-    featureImportance = list(zip(trainData, randomForestClassifier.feature_importances_))
-    print ''
-    print 'featureImportance: '
-    print featureImportance
+    if type(classifier) is RandomForestClassifier:
+        featureImportance = list(zip(trainData, classifier.feature_importances_))
+        result['featureImportance'] = featureImportance
 
-    return confusionMatrix
+    return result

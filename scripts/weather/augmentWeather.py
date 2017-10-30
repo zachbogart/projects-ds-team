@@ -15,6 +15,8 @@
 
 
 # In[15]:
+from scripts.utils import utils
+
 
 def getWeather(created_at, weather):
     from datetime import datetime
@@ -31,16 +33,17 @@ def getWeather(created_at, weather):
 
 # In[16]:
 
-def augmentWeather(start_year=2017,end_year=2017,stationID='725030-14732',location_name='manhattan', root_path='../../'):
+def enrichWithWeather(start_year=2017, end_year=2017, stationID='725030-14732', location_name='manhattan'):
     import json
     import pandas as pd
     from fetchWeather import parse_data
 #     reload(fetchWeather)
     
-    weather = parse_data(start_year,end_year,stationID,root_path)
+    weather = parse_data(start_year,end_year,stationID)
     print 'weather length = ' + str(len(weather))
-    
-    with open(root_path + 'data/'+ location_name +'.json') as data_file:
+
+    dataFilePath = utils.getFullPathFromDataFileName(location_name + '.json')
+    with open(dataFilePath) as data_file:
             jsonData = json.load(data_file)
             print 'jsonData Length = ' + str(len(jsonData))
             
@@ -50,8 +53,10 @@ def augmentWeather(start_year=2017,end_year=2017,stationID='725030-14732',locati
         
         for col in weather.columns:
             i[col] = int(tweetWeather[col])
-    tweetAugweath = pd.DataFrame(jsonData)
-    tweetAugweath.to_json(root_path + 'data/'+ location_name +'_weather.json')
-    
-    return tweetAugweath
+
+    outputPath = utils.getFullPathFromDataFileName(location_name + '_weather.json')
+    with open(outputPath, 'w') as outfile:
+        json.dump(jsonData, outfile)
+
+    return outputPath
 

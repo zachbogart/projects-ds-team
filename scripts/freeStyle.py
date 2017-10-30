@@ -1,5 +1,7 @@
 import json
 
+from scripts.machineLearning import train
+from scripts.sentiment import sentiment
 from scripts.twitter import twitterAPI
 from scripts.utils import utils
 
@@ -11,9 +13,6 @@ from scripts.utils import utils
 #         ]
 # twitterAPI.saveTweets(5, nycBoundingBox, 'manhattan', "Manhattan")
 # mongoToJson.exportMongoCollectionToJson('twitterData', 'manhattan', 'manhattan')
-
-# with open(utils.makeDataFilePath('places.json')) as data_file:
-#     places = json.load(data_file)
 
 # twitterAPI.getTweetsAndSaveToJson()
 
@@ -39,33 +38,42 @@ from scripts.utils import utils
 
 # IDEAL CODE
 # ________________________
-#
-# Get twitter data for city
-# city = places[0]
-# cityName = city["name"]
-# cityProperName = city["properName"]
-# cityBoundingBox = city["boundingBox"]
-# twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
-# pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
-#
-# Enrich with weather data
-# weather.enrichWithWeather(pathToJson, cityName)
-#
-# Enrich with sentiment
-# sentiment.enrichWithSentiment(pathToJson)
-#
-# Do machine learning
-# results = train.doMachineLearning(pathToJson)
-#
-#
 
-with open(utils.makeDataFilePath('places.json')) as data_file:
+# Import places
+from scripts.weather import augmentWeather
+
+with open(utils.getFullPathFromDataFileName('places.json')) as data_file:
     places = json.load(data_file)
 
-def acquireData(placesIndex):
-    city = places[placesIndex]
-    cityName = city["name"]
-    cityProperName = city["properName"]
-    cityBoundingBox = city["boundingBox"]
-    twitterAPI.saveTweets(1000000, cityName, cityBoundingBox, cityProperName)
-    pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
+# Get twitter data for city
+city = places[0]
+cityName = city["name"]
+cityProperName = city["properName"]
+cityBoundingBox = city["boundingBox"]
+cityWeatherStationID = city["weatherStationID"]
+twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
+# twitterDataPath = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
+#
+# # Enrich with weather data
+# twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName)
+# # twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName, stationID=cityWeatherStationID)
+#
+# # Enrich with sentiment
+# twitterWeatherSentimentDataPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
+# sentiment.enrichWithSentiment(twitterWeatherDataPath, twitterWeatherSentimentDataPath)
+#
+# # Do machine learning
+# results = train.doMachineLearning(twitterWeatherSentimentDataPath)
+
+
+
+# with open(utils.makeDataFilePath('places.json')) as data_file:
+#     places = json.load(data_file)
+#
+# def acquireData(placesIndex):
+#     city = places[placesIndex]
+#     cityName = city["name"]
+#     cityProperName = city["properName"]
+#     cityBoundingBox = city["boundingBox"]
+#     twitterAPI.saveTweets(1000000, cityName, cityBoundingBox, cityProperName)
+#     pathToJson = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)

@@ -3,7 +3,7 @@ import os
 from bson import json_util
 from pymongo import MongoClient
 
-from scripts.utils.definitions import ROOT_DIRECTORY, DATA_DIRECTORY
+from scripts.utils.definitions import ROOT_DIRECTORY, DATA_DIRECTORY, RESOURCE_DIRECTORY
 
 
 def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFileName):
@@ -18,7 +18,7 @@ def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFi
     results = mongo_collection.find({})
     resultsJson = json_util.dumps(results)
 
-    fullPath = makeDataFilePath(resultFileName + '.json')
+    fullPath = getFullPathFromDataFileName(resultFileName + '.json')
     obj = open(fullPath, 'wb')
     obj.write(resultsJson)
     obj.close
@@ -27,5 +27,8 @@ def exportMongoCollectionToJson(mongoDatabaseName, mongoCollectionName, resultFi
 def makeFullPath(pathFromScripts):
     return os.path.join(ROOT_DIRECTORY, pathFromScripts)
 
-def makeDataFilePath(dataFileName):
+def getFullPathFromDataFileName(dataFileName):
     return DATA_DIRECTORY + '/' + dataFileName
+
+def getFullPathFromResourceFileName(resourceFileName):
+    return RESOURCE_DIRECTORY + '/' + resourceFileName

@@ -5,6 +5,8 @@ Created on Fri Oct 27 13:33:47 2017
 
 @author: michelkauffmann
 """
+from scripts.utils import utils
+
 
 def sentiment_dict(sentimentData):
     afinnfile = open(sentimentData)
@@ -36,10 +38,10 @@ def enrichWithSentiment(inputFileName, outputFileName):
                             sent_score = sent_score  
             except Exception, (e):
                 print str(e)
-            tweet['sentScore'] = sent_score
+            tweet['sentiment'] = sent_score
             with open(outputFileName, 'w') as outfile:  
                 json.dump(data, outfile)
-    return
+    return outputFileName
 
-sentimentData = 'wordwithStrength.txt'
-sentScores = sentiment_dict(sentimentData)
+sentimentDataPath = utils.getFullPathFromResourceFileName('wordwithStrength.txt')
+sentScores = sentiment_dict(sentimentDataPath)
