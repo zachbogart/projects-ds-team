@@ -13,6 +13,9 @@ auth1.set_access_token('2847047537-wwYPjhsb78FltOxFk8nFvvCtWD6zCVs9JE9qghh',
                        '4fjuf9awSDlNT3AsU7FZFu9AzQcIysKfX0b5IOetxkBr7')
 api = tweepy.API(auth1)
 
+#auth2 = tweepy.auth.OAuthHandler('POovwpxYttFBaFA4HsvUCuu3E','dV0F0xu0q1TdeqBam7hydeZ6uo77NpY9Rh4hp52jdk2Xa86FGB')  
+#auth2.set_access_token('915367269580107776-QscwJ8ZnJMa4LRQosrXuyj6xRg9PQs5','oKOZ488DFeSD1O1Jd6Nopburq6GvDUxCqqhvXptUFt9ko')  
+#api2 = tweepy.API(auth2)
 
 class StreamListener(tweepy.StreamListener):
     print 'About to connect to Mongo'
@@ -93,6 +96,10 @@ def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName
         l.setPlaceName(locationName)
         l.setNumTweets(numTweets)
         l.setMongoCollection(mongoCollectionName)
+#        if locationName in ['denver','boston','houston']:
+#            authTok = auth2
+#        else:
+#            authTok = auth1
         streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
 
         streamer.filter(locations=locationCoordinates)
