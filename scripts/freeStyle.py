@@ -51,19 +51,19 @@ cityName = city["name"]
 cityProperName = city["properName"]
 cityBoundingBox = city["boundingBox"]
 cityWeatherStationID = city["weatherStationID"]
-twitterAPI.saveTweets(5, cityName, cityBoundingBox, cityProperName)
-# twitterDataPath = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
-#
-# # Enrich with weather data
-# twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName)
-# # twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName, stationID=cityWeatherStationID)
-#
-# # Enrich with sentiment
+twitterAPI.saveTweets(50000, cityName, cityBoundingBox, cityProperName)
+# # twitterDataPath = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
+# #
+# # # Enrich with weather data
+# # twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName)
+# twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName, stationID=cityWeatherStationID)
+# #
+# # # Enrich with sentiment
 # twitterWeatherSentimentDataPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
 # sentiment.enrichWithSentiment(twitterWeatherDataPath, twitterWeatherSentimentDataPath)
-#
-# # Do machine learning
-# results = train.doMachineLearning(twitterWeatherSentimentDataPath)
+# #
+# # # Do machine learning
+# results = train.runClassifier(twitterWeatherSentimentDataPath,,
 
 
 

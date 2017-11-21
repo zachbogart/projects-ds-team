@@ -3,19 +3,20 @@
 import tweepy
 from pymongo import MongoClient
 from textwrap import TextWrapper
+
+from requests.packages.urllib3.exceptions import ReadTimeoutError
+import time
+
 from tweepy.utils import import_simplejson
 import datetime
 
 json = import_simplejson()
 
-auth1 = tweepy.auth.OAuthHandler('eOihmPsLf6q0ro03OFyDExyaH', 'XfOAN3SYME0vCRaaUqCsbbxUxNR88JdRKjLswqyGuZZ7fdfeB3')
-auth1.set_access_token('2847047537-wwYPjhsb78FltOxFk8nFvvCtWD6zCVs9JE9qghh',
-                       '4fjuf9awSDlNT3AsU7FZFu9AzQcIysKfX0b5IOetxkBr7')
+auth1 = tweepy.auth.OAuthHandler('EeN161Gk3RqJAQd8zrimPckkF', '0wACEZgYxCoSzMuTa22LdZSfrTWo2BCfsnU6ggK7keeEcQXDqf')
+auth1.set_access_token('2847047537-7vEFDI9rFnEb2h4HmiAJoxSglfurC57XNFTJamr',
+                       '54CTHM5XeBYEsyogP6m2EijRUeLW0mTBaPxjMkiAMmyIf')
 api = tweepy.API(auth1)
 
-#auth2 = tweepy.auth.OAuthHandler('POovwpxYttFBaFA4HsvUCuu3E','dV0F0xu0q1TdeqBam7hydeZ6uo77NpY9Rh4hp52jdk2Xa86FGB')  
-#auth2.set_access_token('915367269580107776-QscwJ8ZnJMa4LRQosrXuyj6xRg9PQs5','oKOZ488DFeSD1O1Jd6Nopburq6GvDUxCqqhvXptUFt9ko')  
-#api2 = tweepy.API(auth2)
 
 class StreamListener(tweepy.StreamListener):
     print 'About to connect to Mongo'
@@ -93,18 +94,33 @@ class StreamListener(tweepy.StreamListener):
 def saveTweets(numTweets, mongoCollectionName, locationCoordinates, locationName):
     try:
         l = StreamListener()
+        print 'here 1'
         l.setPlaceName(locationName)
+        print 'here 1'
         l.setNumTweets(numTweets)
+        print 'here 1'
         l.setMongoCollection(mongoCollectionName)
-#        if locationName in ['denver','boston','houston']:
-#            authTok = auth2
-#        else:
-#            authTok = auth1
-        streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
-
-        streamer.filter(locations=locationCoordinates)
+        print 'here 1'
+        streamer = tweepy.Stream(auth=auth1, listener=l, timeout=1)
+        print 'here 1'
+        # streamer.filter(locations=[-80,
+        #     41,
+        #     -80.1,
+        #     41.1
+        #                            ])
+        print 'here 2'
+        while True:
+            try:
+                streamer.filter(locations=locationCoordinates)
+            except ReadTimeoutError, (e):
+                print ''
+                print e
+                print 'we stopped'
+                time.sleep(30)
     except TweetLimitReachedException, (e):
         print str(e)
+
+
 
 
 def getPlaceID(placeName):

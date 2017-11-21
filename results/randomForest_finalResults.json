@@ -1,0 +1,16 @@
+{
+  "classifierType": "<class 'sklearn.ensemble.forest.RandomForestClassifier'>",
+  "trainAccuracy": 0.5383369444035424,
+  "recall": 0.9231400117164617,
+  "precision": 0.5418471907021525,
+  "logLoss": 0.6900928920903716,
+  "featureImportance": {
+    "skycoverage(code)": 0.10315979697447283,
+    "6h-prec(mm)": 0.04495064448813098,
+    "airtemp(C)": 0.27491024489830823,
+    "windspeed(m/s)": 0.2536870830427865,
+    "dewpoint(C)": 0.27725842282817875,
+    "1h-prec(mm)": 0.04603380776812275
+  },
+  "testAccuracy": 0.5382091247554742
+}

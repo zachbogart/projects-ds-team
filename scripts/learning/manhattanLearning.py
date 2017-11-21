@@ -1,3 +1,5 @@
+from sklearn.ensemble import RandomForestClassifier
+
 from scripts.machineLearning import train
 from scripts.sentiment import sentiment
 from scripts.twitter import twitterAPI
@@ -10,7 +12,7 @@ with open(utils.getFullPathFromDataFileName('places.json')) as data_file:
     places = json.load(data_file)
 
 # Get twitter data for city
-city = places[12]
+city = places[0]
 cityName = city["name"]
 cityProperName = city["properName"]
 cityBoundingBox = city["boundingBox"]
@@ -19,11 +21,20 @@ cityWeatherStationID = city["weatherStationID"]
 # twitterDataPath = utils.exportMongoCollectionToJson('twitterData', cityName, cityName)
 #
 # # Enrich with weather data
-twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName, stationID=cityWeatherStationID)
+# twitterWeatherDataPath = augmentWeather.enrichWithWeather(location_name=cityName)
 #
 # # Enrich with sentiment
-twitterWeatherSentimentDataPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
-sentiment.enrichWithSentiment(twitterWeatherDataPath, twitterWeatherSentimentDataPath)
+# twitterWeatherDataPath = utils.getFullPathFromDataFileName(cityName + '_weather.json')
+twitterWeatherSentimentFileName = cityName + '_weather_sentiment.json'
+# print twitterWeatherDataPath
+# print twitterWeatherSentimentDataPath
+# sentiment.enrichWithSentiment(twitterWeatherDataPath, twitterWeatherSentimentDataPath)
 #
 # # Do machine learning
-results = train.runClassifier(twitterWeatherSentimentDataPath,,
+
+classifier = RandomForestClassifier(
+    n_estimators=10
+)
+print ''
+print 'About to do machine learning on file: ', twitterWeatherSentimentFileName
+results = train.runClassifier(classifier, "randomForest", [twitterWeatherSentimentFileName])

@@ -68,3 +68,30 @@ def parse_data(start_year, end_year, stationID):
     full_hist.columns = col_names
     full_hist.to_csv(str(stationID)+"_"+str(start_year)+"-"+str(end_year)+"_data.csv")
     return full_hist
+
+def parseWeatherToJson(start_year, end_year, stationID):
+    import pandas as pd
+    baseURL = "ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-lite/"
+
+    col_names = ['year', 'month', 'day', 'hour', 'airtemp(C)', 'dewpoint(C)', 'windspeed(m/s)', 'skycoverage(code)', '1h-prec(mm)', '6h-prec(mm)']
+    full_hist = pd.DataFrame()
+
+
+    for year in range(start_year,end_year+1):
+#         print baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz"
+        try:
+            year_hist = fetch_weather_data(baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz")
+            full_hist = full_hist.append(year_hist)
+        except:
+            print "following URL was invalid: " + baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz"
+            print "make sure to enclose the stationID in quotes"
+
+    full_hist.columns = col_names
+
+    weatherLookup = {}
+
+    for index, row in full_hist.iterrows():
+        key = str(full_hist['month']) + '/' + str(full_hist['day']) + '/' + str(full_hist['year'])
+        weatherLookup[key] = row
+
+    return weatherLookup

@@ -46,17 +46,31 @@ def enrichWithWeather(start_year=2017, end_year=2017, stationID='725030-14732', 
     with open(dataFilePath) as data_file:
             jsonData = json.load(data_file)
             print 'jsonData Length = ' + str(len(jsonData))
-            
-    for i in jsonData:
-        datetime = i['created_at']['$date']
+
+    count = 0
+    for dataObject in jsonData:
+        if count % 10000 == 0:
+            print "Adding weather data: ", count
+        count = count + 1
+
+        datetime = dataObject['created_at']['$date']
         tweetWeather = getWeather(datetime,weather)
         
         for col in weather.columns:
-            i[col] = int(tweetWeather[col])
+            try:
+                dataObject[col] = int(tweetWeather[col])
+            except TypeError or KeyError, (e):
+                pass
+                # print ''
+                # print col
+                # print tweetWeather[col]
+                # print str(e)
 
     outputPath = utils.getFullPathFromDataFileName(location_name + '_weather.json')
     with open(outputPath, 'w') as outfile:
         json.dump(jsonData, outfile)
+
+    print 'Saved file: ', outputPath
 
     return outputPath
 
