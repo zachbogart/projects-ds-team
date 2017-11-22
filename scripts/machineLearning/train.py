@@ -246,7 +246,7 @@ def runClassifier(classifier, classifierName, jsonFileNames, numDataPoints=None)
     print "Fitting ", classifierName
     classifier.fit(trainData, trainLabels)
 
-    getResultsFromTrainedClassifier(classifier, classifierName, trainData, trainLabels, testData, testLabels)
+    saveResultsFromTrainedClassifier(classifier, classifierName, trainData, trainLabels, testData, testLabels)
 
 
 def computeNumCombinations(parameterGrid):
@@ -334,7 +334,7 @@ def printReleventResults(results):
             print result['featureImportance']
 
 
-def getResultsFromTrainedClassifier(classifier, classifierName, trainData, trainLabels, testData, testLabels):
+def saveResultsFromTrainedClassifier(classifier, classifierName, trainData, trainLabels, testData, testLabels):
     result = {}
 
     print 'Running classifier: ', str(type(classifier))
@@ -393,4 +393,3 @@ def getResultsFromTrainedClassifier(classifier, classifierName, trainData, train
     resultsJson = json.dumps(result)
     obj.write(resultsJson)
     obj.close()
-    return result
