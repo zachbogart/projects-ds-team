@@ -42,7 +42,7 @@ nValues = [
     2 ** 20,
 ]
 
-tuneNValue(nValues, classifier, classifierName)
+tuneNValue(nValues, classifier, classifierName, jsonFileNames)
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
