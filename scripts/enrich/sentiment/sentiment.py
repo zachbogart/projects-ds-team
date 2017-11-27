@@ -1,10 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Oct 27 13:33:47 2017
+import json
 
-@author: michelkauffmann
-"""
 from scripts.utils import utils
 
 
@@ -17,8 +14,9 @@ def sentiment_dict(sentimentData):
 
     return scores 
 
-def enrichWithSentiment(inputFilePath, outputFilePath):
-    import json
+def enrichWithSentiment(cityName):
+    inputFilePath = cityName + '_weather.json'
+    outputFilePath = cityName + '_weather_sentiment.json'
 
     count = 0
     with open(inputFilePath) as data_file:
@@ -29,11 +27,11 @@ def enrichWithSentiment(inputFilePath, outputFilePath):
                 print "Adding sentiment data: ", count
             count = count + 1
             tweet_body = (tweet['body'])
+            sent_score = 0
             try:
                 if tweet_body:
                     tweet_word = tweet_body.lower().split()
                     # print tweet_word
-                    sent_score = 0
                     for word in tweet_word:
                         word = word.rstrip('?:!.,;"!@')
                         word = word.replace("\n", "")

@@ -33,7 +33,7 @@ def getWeather(created_at, weather):
 
 # In[16]:
 
-def enrichWithWeather(start_year=2017, end_year=2017, stationID='725030-14732', location_name='manhattan'):
+def enrichWithWeather(location_name, stationID, start_year=2017, end_year=2017):
     import json
     import pandas as pd
     from fetchWeather import parse_data

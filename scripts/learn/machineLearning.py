@@ -11,6 +11,7 @@ from scripts.utils import utils
 from time import time
 from random import random
 
+np.random.seed(7)
 pd.options.mode.chained_assignment = None  # Removes unnecessary warning
 
 

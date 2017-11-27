@@ -1,8 +1,8 @@
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
-from scripts.machineLearning import train
-from scripts.machineLearning.train import tuneNValue
-import numpy as np
+from scripts.learn import machineLearning
+from scripts.learn.machineLearning import tuneNValue
 
 # ______________________________________________________
 # HOW LONG WILL MY CLASSIFIER TAKE TO RUN ON MY MACHINE?
@@ -65,7 +65,7 @@ parameterGrid = {
     "max_features": ["auto", "sqrt", "log2"]
 }
 
-train.tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue)
+machineLearning.tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue)
 
 # ______________________________________________________
 # WHAT IS THE BEST COMBINATION OF VARIABLES?
@@ -84,7 +84,7 @@ parameterGrid = {
     "max_features": ["auto", "sqrt", "log2"]
 }
 
-train.tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue)
+machineLearning.tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue)
 
 # ______________________________________________________
 # RUN THE MODEL WITH BEST PARAMETERS
@@ -102,4 +102,4 @@ bestClassifier = RandomForestClassifier(
     max_features="auto",
 )
 
-train.runClassifier(bestClassifier, "randomForest", jsonFileNames)
+machineLearning.runClassifier(bestClassifier, "randomForest", jsonFileNames)
