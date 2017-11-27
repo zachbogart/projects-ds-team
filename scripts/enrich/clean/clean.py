@@ -1,10 +1,6 @@
 import json
 
 
-class BadDataEntryException(Exception):
-    pass
-
-
 def clean(cityName):
     inputPath = cityName + '_weather_sentiment.json'
     outputPath = cityName + '_weather_sentiment_clean.json'
@@ -18,14 +14,9 @@ def clean(cityName):
                 print "Cleaning data -- count: ", count
             count = count + 1
 
-            try:
-                dataEntry = removeIncompleteData(dataEntry)
+            if hasCompleteData(dataEntry) and hasNonNegativeSentiment(dataEntry):
                 dataEntry = fixWeatherData(dataEntry)
-                dataEntry = removeNeutralSentiment(dataEntry)
-
                 cleanData.append(dataEntry)
-            except BadDataEntryException:
-                pass
 
     with open(outputPath, 'w') as outfile:
         json.dump(cleanData, outfile)
@@ -33,15 +24,17 @@ def clean(cityName):
     print 'Saved file: ', outputPath
 
 
-def removeIncompleteData(dataEntry):
-    return dataEntry
+def hasCompleteData(dataEntry):
+    # TODO: Code this
+    return True
 
 
 def fixWeatherData(dataEntry):
+    # TODO: Code this
     return dataEntry
 
 
-def removeNeutralSentiment(dataEntry):
+def hasNonNegativeSentiment(dataEntry):
     if ('sentiment' not in dataEntry) or (dataEntry['sentiment'] == 0):
-        raise BadDataEntryException("No Neutral Sentiment")
-    return dataEntry
+        return False
+    return True
