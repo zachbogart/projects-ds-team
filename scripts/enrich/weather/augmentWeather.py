@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 # In[14]:
@@ -15,62 +14,54 @@
 
 
 # In[15]:
+import json
+
+from scripts.enrich.weather import getNewWeather
 from scripts.utils import utils
 
 
 def getWeather(created_at, weather):
     from datetime import datetime
-    d=str(created_at)
+    d = str(created_at)
     d = int(d[:10])
-    tweet_year = int(datetime.fromtimestamp(d).strftime('%Y'))
-    tweet_month = int(datetime.fromtimestamp(d).strftime('%m')) # '%m-%d %I:%M:%S %p'
-    tweet_day = int(datetime.fromtimestamp(d).strftime('%d'))
+    tweet_year = datetime.fromtimestamp(d).strftime('%Y')
+    tweet_month = datetime.fromtimestamp(d).strftime('%m')
+    tweet_day = datetime.fromtimestamp(d).strftime('%d')
     tweet_hour = int(datetime.fromtimestamp(d).strftime('%I'))
-    
-    weather_data = weather[(weather.month == tweet_month) & (weather.day == tweet_day) & (weather.hour == tweet_hour)]
-    return weather_data 
+
+    weatherKey = tweet_year + '-' + tweet_month + '-' + tweet_day
+    weatherDataDaily = weather[weatherKey]['data']
+    weatherDataHourly = weatherDataDaily[tweet_hour]
+    return weatherDataHourly
 
 
 # In[16]:
 
-def enrichWithWeather(location_name, stationID, start_year=2017, end_year=2017):
-    import json
-    import pandas as pd
-    from fetchWeather import parse_data
-#     reload(fetchWeather)
-    
-    weather = parse_data(start_year,end_year,stationID)
-    print 'weather length = ' + str(len(weather))
+def enrichWithWeather(location_name, coordinates):
+    weather = getNewWeather.getWeatherForCoordinates(coordinates)
+    print 'weather length = ' + str(len(weather)) + ' days of data'
 
     dataFilePath = utils.getFullPathFromDataFileName(location_name + '.json')
     with open(dataFilePath) as data_file:
-            jsonData = json.load(data_file)
-            print 'jsonData Length = ' + str(len(jsonData))
+        jsonData = json.load(data_file)
+        print 'Adding weather to data of length = ' + str(len(jsonData))
 
     count = 0
     for dataObject in jsonData:
-        if count % 10000 == 0:
+        if count % 100000 == 0:
             print "Adding weather data: ", count
         count = count + 1
 
         datetime = dataObject['created_at']['$date']
-        tweetWeather = getWeather(datetime,weather)
-        
-        for col in weather.columns:
-            try:
-                dataObject[col] = int(tweetWeather[col])
-            except TypeError or KeyError, (e):
-                pass
-                # print ''
-                # print col
-                # print tweetWeather[col]
-                # print str(e)
+        tweetWeather = getWeather(datetime, weather)
+
+        dataObject.update(tweetWeather)
 
     outputPath = utils.getFullPathFromDataFileName(location_name + '_weather.json')
+    print 'Saving file: ', outputPath
     with open(outputPath, 'w') as outfile:
         json.dump(jsonData, outfile)
 
     print 'Saved file: ', outputPath
 
     return outputPath
-

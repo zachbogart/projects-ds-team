@@ -55,15 +55,17 @@ def parse_data(start_year, end_year, stationID):
     col_names = ['year', 'month', 'day', 'hour', 'airtemp(C)', 'dewpoint(C)', 'windspeed(m/s)', 'skycoverage(code)', '1h-prec(mm)', '6h-prec(mm)']
     full_hist = pd.DataFrame()
 
-
     for year in range(start_year,end_year+1):
-#         print baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz"
+        #         print baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz"
+        weatherFileURL = baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz"
         try:
-            year_hist = fetch_weather_data(baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz")
+            year_hist = fetch_weather_data(weatherFileURL)
             full_hist = full_hist.append(year_hist)
         except:
-            print "following URL was invalid: " + baseURL + str(year) + "/" + str(stationID) + "-" + str(year) + ".gz"
+            print "following URL was invalid: " + weatherFileURL
             print "make sure to enclose the stationID in quotes"
+            raise Exception("No Weather Data Found for URL: " + weatherFileURL)
+
 
     full_hist.columns = col_names
     full_hist.to_csv(str(stationID)+"_"+str(start_year)+"-"+str(end_year)+"_data.csv")

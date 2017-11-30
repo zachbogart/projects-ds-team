@@ -15,15 +15,15 @@ def sentiment_dict(sentimentData):
     return scores 
 
 def enrichWithSentiment(cityName):
-    inputFilePath = cityName + '_weather.json'
-    outputFilePath = cityName + '_weather_sentiment.json'
+    inputFilePath = utils.getFullPathFromDataFileName(cityName + '_weather.json')
+    outputFilePath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
 
     count = 0
     with open(inputFilePath) as data_file:
         data = json.load(data_file)
         print 'Adding sentiments to tweet list of length: ', len(data)
         for tweet in data:
-            if count % 10000 == 0:
+            if count % 100000 == 0:
                 print "Adding sentiment data: ", count
             count = count + 1
             tweet_body = (tweet['body'])
@@ -41,9 +41,10 @@ def enrichWithSentiment(cityName):
             except Exception, (e):
                 print str(e)
             tweet['sentiment'] = sent_score
+        print 'Saving file to ', outputFilePath
         with open(outputFilePath, 'w') as outfile:
             json.dump(data, outfile)
-    print 'File saved to ', outputFilePath
+        print 'File saved to ', outputFilePath
     return outputFilePath
 
 sentimentDataPath = utils.getFullPathFromResourceFileName('wordwithStrength.txt')

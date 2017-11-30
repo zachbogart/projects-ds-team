@@ -1,16 +1,18 @@
 import json
 
+from scripts.utils import utils
+
 
 def clean(cityName):
-    inputPath = cityName + '_weather_sentiment.json'
-    outputPath = cityName + '_weather_sentiment_clean.json'
+    inputPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
+    outputPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment_clean.json')
     with open(inputPath) as data_file:
         dataEntries = json.load(data_file)
 
         count = 0
         cleanData = []
         for dataEntry in dataEntries:
-            if count % 10000 == 0:
+            if count % 100000 == 0:
                 print "Cleaning data -- count: ", count
             count = count + 1
 
