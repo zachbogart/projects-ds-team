@@ -1,0 +1,98 @@
+[
+  {
+    "name": "manhattan",
+    "properName": "Manhattan",
+    "boundingBox": [
+      -74.026675,
+      40.683935,
+      -73.910408,
+      40.877483
+    ],
+    "coordinates": "40.780709,-73.9685415",
+    "weatherStationID": "725033-14732"
+  },
+  {
+    "name": "sanFrancisco",
+    "properName": "San Francisco",
+    "boundingBox": [
+      -122.514926,
+      37.708075,
+      -122.357031,
+      37.833238
+    ],
+    "coordinates": "37.7706565,-122.4359785",
+    "weatherStationID": "994016-99999"
+  },
+  {
+    "name": "houston",
+    "properName": "Houston",
+    "boundingBox": [
+      -95.823268,
+      29.522325,
+      -95.069705,
+      30.1546646
+    ],
+    "coordinates": "29.8384948,-95.4464865",
+    "weatherStationID": "720594-00188"
+  },
+  {
+    "name": "denver",
+    "properName": "Denver",
+    "boundingBox": [
+      -105.109815,
+      39.614151,
+      -104.734372,
+      39.812975
+    ],
+    "coordinates": "39.713563,-104.9220935",
+    "weatherStationID": "999999-23012"
+  },
+  {
+    "name": "seattle",
+    "properName": "Seattle",
+    "boundingBox": [
+      -122.436232,
+      47.4953154,
+      -122.2249728,
+      47.734319
+    ],
+    "coordinates": "47.6148172,-122.3306024",
+    "weatherStationID": "994014-99999"
+  },
+  {
+    "name": "chicago",
+    "properName": "Chicago",
+    "boundingBox": [
+      -87.940033,
+      41.644102,
+      -87.523993,
+      42.0230669
+    ],
+    "coordinates": "41.83358445,-87.732013",
+    "weatherStationID": "725300-94846"
+  },
+  {
+    "name": "phoenix",
+    "properName": "Phoenix",
+    "boundingBox": [
+      -112.3239143,
+      33.29026,
+      -111.9254391,
+      33.8154652
+    ],
+    "coordinates": "33.5528626,-112.1246767",
+    "weatherStationID": "722780-23183"
+  },
+  {
+    "name": "detroit",
+    "properName": "Detroit",
+    "boundingBox": [
+      -83.288056,
+      42.255085,
+      -82.91052,
+      42.450488
+    ],
+    "coordinates": "42.3527865,-83.099288",
+    "weatherStationID": "725375-14822"
+  }
+]
