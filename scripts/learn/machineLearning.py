@@ -14,6 +14,32 @@ from random import random
 np.random.seed(7)
 pd.options.mode.chained_assignment = None  # Removes unnecessary warning
 
+featureColumnNames = [
+    'cloudCover',
+    # 'summary',
+    'temperature',
+    'dewPoint',
+    # 'followers',
+    # 'location',
+    'windBearing',
+    # 'local_datetime',
+    # 'friends_count',
+    # 'windGust', # Some nan values
+    'visibility',
+    'apparentTemperature',
+    'pressure',
+    # 'icon',
+    'precipIntensity',
+    'precipTypeNone',
+    'precipTypeRain',
+    'precipTypeSnow',
+    'humidity',
+    # 'ozone', # Some nan values
+    'windSpeed',
+    # 'uvIndex', # Some nan values
+    'precipProbability',
+]
+
 
 def tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, numDataPoints):
     """
@@ -46,16 +72,6 @@ def tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, num
     data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
     data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
 
-    featureColumnNames = [
-        # "friends_count",
-        # "followers",
-        "airtemp(C)",
-        "dewpoint(C)",
-        "windspeed(m/s)",
-        "skycoverage(code)",
-        "1h-prec(mm)",
-        "6h-prec(mm)"
-    ]
     labelColumnName = 'sentimentScore'
 
     usableColumnNames = []
@@ -102,16 +118,6 @@ def tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFi
     data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
     data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
 
-    featureColumnNames = [
-        # "friends_count",
-        # "followers",
-        "airtemp(C)",
-        "dewpoint(C)",
-        "windspeed(m/s)",
-        "skycoverage(code)",
-        "1h-prec(mm)",
-        "6h-prec(mm)"
-    ]
     labelColumnName = 'sentimentScore'
 
     usableColumnNames = []
@@ -124,6 +130,7 @@ def tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFi
     trainLabels = smallerData[labelColumnName]
 
     for parameter, parameterOptions in dict.items(parameterGrid):
+        print ''
         print "Running parameter: ", parameter
         results = evaluateParameter(classifier, trainData, trainLabels, parameter, parameterOptions)
         saveResultsAsCSV(results, classifierName, parameter)
@@ -149,45 +156,40 @@ def tuneNValue(nValues, classifier, classifierName, jsonFileNames):
     data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
     data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
 
-    featureColumnNames = [
-        # "friends_count",
-        # "followers",
-        "airtemp(C)",
-        "dewpoint(C)",
-        "windspeed(m/s)",
-        "skycoverage(code)",
-        "1h-prec(mm)",
-        "6h-prec(mm)"
-    ]
     labelColumnName = 'sentimentScore'
 
-    usableColumnNames = []
-    usableColumnNames.extend(featureColumnNames)
-    usableColumnNames.append(labelColumnName)
+    columnNames = []
+    columnNames.extend(featureColumnNames)
+    columnNames.append(labelColumnName)
 
-    usableData = data[usableColumnNames].dropna()
+    finalData = data[columnNames]
+    datapointCount = len(finalData)
+    print "We have " + str(datapointCount) + " total data points and will not run for n values greater than " + str(
+        datapointCount)
 
-    numData = len(data)
-    print "We have " + str(numData) + " total data points and will not run for n values greater than " + str(numData)
-
-    nValues = [x for x in nValues if x <= numData]
+    nValues = [x for x in nValues if x <= datapointCount]
     results = []
     for nValue in nValues:
-        sampledData = randomSampleDatapoints(usableData, nValue)
+        sampledData = randomSampleDatapoints(finalData, nValue)
         trainPercentage = .75
         trainData, testData, trainLabels, testLabels = train_test_split(sampledData[featureColumnNames],
                                                                         sampledData[labelColumnName],
                                                                         train_size=trainPercentage)
         print ''
         print 'Training n value', nValue
-        print 'length of data: ', len(sampledData)
 
         startTime = time()
         classifier.fit(trainData, trainLabels)
         totalTime = time() - startTime
         predictions = classifier.predict(testData)
         testAccuracy = metrics.accuracy_score(testLabels, predictions)
-        results.append({'time': totalTime, 'testAccuracy': testAccuracy})
+        trainPredictions = classifier.predict(trainData)
+        trainAccuracy = metrics.accuracy_score(trainLabels, trainPredictions)
+        results.append({
+            'time': totalTime,
+            'testAccuracy': testAccuracy,
+            'trainAccuracy': trainAccuracy
+        })
 
     resultsDataFrame = pd.DataFrame(results)
     resultsDataFrame.index = nValues
@@ -215,16 +217,6 @@ def runClassifier(classifier, classifierName, jsonFileNames, numDataPoints=None)
     data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
     data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
 
-    featureColumnNames = [
-        # "friends_count",
-        # "followers",
-        "airtemp(C)",
-        "dewpoint(C)",
-        "windspeed(m/s)",
-        "skycoverage(code)",
-        "1h-prec(mm)",
-        "6h-prec(mm)"
-    ]
     labelColumnName = 'sentimentScore'
 
     usableColumnNames = []
@@ -261,9 +253,9 @@ def isLabelPositive(label):
     if label > 0:
         return 1
     elif label < 0:
-        return 2
+        return -1
     else:
-        return 0
+        raise Exception("This should not be 0. Neutral data should be removed")
 
 
 def toLabelName(label):
@@ -294,7 +286,7 @@ def randomSampleDatapoints(data, sampleSize):
 
 def saveResultsAsCSV(parameterResults, classifierName, additionalName):
     resultsPath = utils.getFullPathFromResultFileName('gridResults/' + classifierName + '_' + additionalName + '.csv')
-    parameterResults.to_csv(resultsPath, sep='\t')
+    parameterResults.to_csv(resultsPath, sep=',')
 
 
 def evaluateParameter(classifier, trainData, trainLabels, parameter, parameterOptions):

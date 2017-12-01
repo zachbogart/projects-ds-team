@@ -32,7 +32,35 @@ def hasCompleteData(dataEntry):
 
 
 def fixWeatherData(dataEntry):
-    # TODO: Code this
+    # precipType: set value to 'NoPrecip'
+    if 'precipType' not in dataEntry:
+        dataEntry['precipType'] = 'NoPrecip'
+
+    dataEntry['precipTypeNone'] = dataEntry['precipType'] == 'NoPrecip'
+    dataEntry['precipTypeRain'] = dataEntry['precipType'] == 'rain'
+    dataEntry['precipTypeSnow'] = dataEntry['precipType'] == 'snow'
+
+    # remove ozone, windGusts and uv index from the dataframe
+    try:
+        del dataEntry['ozone']
+    except KeyError:
+        pass
+    try:
+        del dataEntry['uvIndex']
+    except KeyError:
+        pass
+    try:
+        del dataEntry['windGust']
+    except KeyError:
+        pass
+
+        # handle cloudCover
+    iconDict = {'fog': .7, 'clear-night': 0, 'clear-day': 0, 'partly-cloudy-day': .3, 'cloudy': .5,
+                u'partly-cloudy-night': .3, 'wind': .5, 'rain': .9}
+
+    if 'cloudCover' not in dataEntry:
+        dataEntry['cloudCover'] = iconDict[dataEntry['icon']]
+
     return dataEntry
 
 
