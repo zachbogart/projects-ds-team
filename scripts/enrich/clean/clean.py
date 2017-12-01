@@ -16,8 +16,9 @@ def clean(cityName):
                 print "Cleaning data -- count: ", count
             count = count + 1
 
-            if hasCompleteData(dataEntry) and hasNonNegativeSentiment(dataEntry):
+            if hasNonNegativeSentiment(dataEntry):
                 dataEntry = fixWeatherData(dataEntry)
+                dataEntry = addSentimentLabel(dataEntry)
                 cleanData.append(dataEntry)
 
     with open(outputPath, 'w') as outfile:
@@ -26,9 +27,18 @@ def clean(cityName):
     print 'Saved file: ', outputPath
 
 
-def hasCompleteData(dataEntry):
-    # TODO: Code this
-    return True
+def isLabelPositive(label):
+    if label > 0:
+        return 1
+    elif label < 0:
+        return 0
+    else:
+        raise Exception("The sentiment should not be 0. Neutral data should have been removed")
+
+
+def addSentimentLabel(dataEntry):
+    dataEntry['sentimentScore'] = isLabelPositive(dataEntry['sentiment'])
+    return dataEntry
 
 
 def fixWeatherData(dataEntry):

@@ -122,5 +122,5 @@ bestClassifier = GaussianNB(
     priors=None
 )
 
-machineLearning.runClassifier(bestClassifier, "GaussNB", jsonFileNames)
+machineLearning.runRegressor(bestClassifier, "GaussNB", jsonFileNames)
 

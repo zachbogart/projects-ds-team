@@ -106,4 +106,4 @@ bestClassifier = LogisticRegression(
     random_state = 92
 )
 
-machineLearning.runClassifier(bestClassifier, "LogisticRegression", jsonFileNames)
+machineLearning.runRegressor(bestClassifier, "LogisticRegression", jsonFileNames)

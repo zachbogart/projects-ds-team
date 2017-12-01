@@ -53,8 +53,8 @@ def enrichWithSentiment(cityName):
 
 def getSentScore(tweet):
     blob = TextBlob(tweet)
-    blob.tags           
-    blob.noun_phrases   
+    # blob.tags
+    # blob.noun_phrases
     sent_score = 0
     for sentence in blob.sentences:
         sent_score += sentence.sentiment.polarity

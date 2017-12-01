@@ -15,39 +15,45 @@ from scripts.utils import utils
 
 def printClassVariables():
     jsonFileNames = [
-        'chicago_weather_sentiment_cleaner.json',
-        'denver_weather_sentiment_cleaner.json',
-        'detroit_weather_sentiment_cleaner.json',
-        'houston_weather_sentiment_cleaner.json',
-        'manhattan_weather_sentiment_cleaner.json',
-        'phoenix_weather_sentiment_cleaner.json',
-        'sanFrancisco_weather_sentiment_cleaner.json',
-        'seattle_weather_sentiment_cleaner.json',
+        'chicago_weather_sentiment_clean_grouped.json',
+        'denver_weather_sentiment_clean_grouped.json',
+        'detroit_weather_sentiment_clean_grouped.json',
+        'houston_weather_sentiment_clean_grouped.json',
+        'manhattan_weather_sentiment_clean_grouped.json',
+        'phoenix_weather_sentiment_clean_grouped.json',
+        'sanFrancisco_weather_sentiment_clean_grouped.json',
+        'seattle_weather_sentiment_clean_grouped.json',
     ]
+
+
 
     jsonData = retrieveJsonData(jsonFileNames)
     dataframe = pd.DataFrame(jsonData)
-    print ''
-    print 'icons'
-    print dataframe['icon'].unique()
 
-    print ''
-    print 'icon counts'
-    count = dataframe['icon'].count()
-    result = dataframe['icon'].value_counts().div(count)
-    print result
+    sentimentAveragePath = utils.getFullPathFromDataFileName('csv/full_data.csv')
+    dataframe.to_csv(sentimentAveragePath)
 
-    print ''
-    print 'precipType'
-    print dataframe['precipType'].unique()
+    # print ''
+    # print 'icons'
+    # print dataframe['icon'].unique()
+    #
+    # print ''
+    # print 'icon counts'
+    # count = dataframe['icon'].count()
+    # result = dataframe['icon'].value_counts().div(count)
+    # print result
+    #
+    # print ''
+    # print 'precipType'
+    # print dataframe['precipType'].unique()
+    #
+    # print ''
+    # print 'precipType counts'
+    # dataframe = dataframe[['precipType']]
+    # count = dataframe['precipType'].count()
+    # result = dataframe['precipType'].value_counts().div(count)
 
-    print ''
-    print 'precipType counts'
-    dataframe = dataframe[['precipType']]
-    count = dataframe['precipType'].count()
-    result = dataframe['precipType'].value_counts().div(count)
-
-    print result
+    # print result
 
 
 printClassVariables()

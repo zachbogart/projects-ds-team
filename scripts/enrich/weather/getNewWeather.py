@@ -10,10 +10,11 @@ def getWeatherForCoordinates(gps):
 
     hourlyWeather = dict()
 
-    startDay = 1508889600
-    endDay = 1511991800
+    oct252017 = 1508889600
+    nov302017 = 1511991800
+    oneDayInSeconds = 86400
 
-    for t in range(startDay,endDay,86400):
+    for t in range(oct252017, nov302017, oneDayInSeconds):
         url = base_url + gps + ',' + str(t)
         day = tm.strftime('%Y-%m-%d', tm.localtime(t))
         response = urllib.urlopen(url)

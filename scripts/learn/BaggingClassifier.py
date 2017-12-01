@@ -121,5 +121,5 @@ bestClassifier = BaggingClassifier(
     verbose=1
     )
 #
-machineLearning.runClassifier(bestClassifier, "BaggingClassifier", jsonFileNames)
+machineLearning.runRegressor(bestClassifier, "BaggingClassifier", jsonFileNames)
 #

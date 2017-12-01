@@ -22,6 +22,7 @@ featureColumnNames = [
     # 'followers',
     # 'location',
     'windBearing',
+    # 'location',
     # 'local_datetime',
     # 'friends_count',
     # 'windGust', # Some nan values
@@ -40,12 +41,14 @@ featureColumnNames = [
     'precipProbability',
 ]
 
+labelColumnName = 'sentiment_average'
 
-def tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, numDataPoints):
+
+def tuneParameters(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints):
     """
     This function should be called to find the best combination of
     parameters to run. Results will be written as csv file in the form
-    <classifierName>_parameterTuning.csv
+    <regressorName>_parameterTuning.csv
 
     Be careful of including too many parameters, this function will
     run EVERY combination of parameters. To find a smaller range of values
@@ -55,8 +58,8 @@ def tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, num
         nEstimators: [2,4,6,8],
         maxDepth: [1,10,100,1000]
     }
-    :param classifierName: May not contain spaces
-    :param classifier:
+    :param regressorName: May not contain spaces
+    :param regressor:
     :param jsonFileNames: ex-- [
         'chicago_weather_sentiment.json',
         'manhattan_weather_sentiment.json',
@@ -64,44 +67,47 @@ def tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, num
     ]
     :param numDataPoints: The number of data points we will sample to run this
     """
-    if ' ' in classifierName:
-        raise Exception('No spaces allowed in classifierName')
+    if ' ' in regressorName:
+        raise Exception('No spaces allowed in regressorName')
 
     jsonData = retrieveJsonData(jsonFileNames)
     data = pd.DataFrame.from_dict(jsonData, orient='columns')
-    data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
-    data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
-
-    labelColumnName = 'sentimentScore'
 
     usableColumnNames = []
     usableColumnNames.extend(featureColumnNames)
     usableColumnNames.append(labelColumnName)
 
-    usableData = data[usableColumnNames].dropna()
-    smallerData = randomSampleDatapoints(usableData, numDataPoints)
+    finalData = data[usableColumnNames]
+    smallerData = randomSampleDatapoints(finalData, numDataPoints)
     trainData = smallerData[featureColumnNames]
     trainLabels = smallerData[labelColumnName]
 
     numCombinations = computeNumCombinations(parameterGrid)
     print "About to tune parameters with # combinations: ", numCombinations
 
-    results = evaluateParameters(classifier, trainData, trainLabels, parameterGrid)
-    saveResultsAsCSV(results, classifierName, "parameterTuning")
+    results = evaluateParameters(regressor, trainData, trainLabels, parameterGrid)
+    bestParams = {}
+    bestResult = results.nlargest(1, 'mean_test_score')
+    bestResult.index = [0]
+    for parameter in parameterGrid:
+        value = bestResult['param_' + parameter][0]
+        bestParams[parameter] = value
+    saveResultsAsCSV(results, regressorName, "parameterTuning")
+    return bestParams
 
 
-def tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFileNames, numDataPoints):
+def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints, numTopParameters):
     """
     This function will run through each parameter and try every value independent of any
     other variable. The result will be saved in separate files named
-    <classifierName>_<parameter>.csv
+    <regressorName>_<parameter>.csv
 
     :param parameterGrid: ex-- {
         nEstimators: [2,4,6,8],
         maxDepth: [1,10,100,1000]
     }
-    :param classifierName: May not contain spaces
-    :param classifier:
+    :param regressorName: May not contain spaces
+    :param regressor:
     :param jsonFileNames: ex-- [
         'chicago_weather_sentiment.json',
         'manhattan_weather_sentiment.json',
@@ -110,15 +116,11 @@ def tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFi
     :param numDataPoints: The number of data points we will sample to run this
     :return:
     """
-    if ' ' in classifierName:
-        raise Exception('No spaces allowed in classifierName')
+    if ' ' in regressorName:
+        raise Exception('No spaces allowed in regressorName')
 
     jsonData = retrieveJsonData(jsonFileNames)
     data = pd.DataFrame.from_dict(jsonData, orient='columns')
-    data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
-    data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
-
-    labelColumnName = 'sentimentScore'
 
     usableColumnNames = []
     usableColumnNames.extend(featureColumnNames)
@@ -129,34 +131,35 @@ def tuneParametersIndividually(parameterGrid, classifierName, classifier, jsonFi
     trainData = smallerData[featureColumnNames]
     trainLabels = smallerData[labelColumnName]
 
+    bestParams = {}
     for parameter, parameterOptions in dict.items(parameterGrid):
         print ''
         print "Running parameter: ", parameter
-        results = evaluateParameter(classifier, trainData, trainLabels, parameter, parameterOptions)
-        saveResultsAsCSV(results, classifierName, parameter)
+        results = evaluateParameter(regressor, trainData, trainLabels, parameter, parameterOptions)
+        topRows = results.nlargest(numTopParameters, 'mean_test_score')
+        topParams = topRows['param_' + parameter].tolist()
+        bestParams[parameter] = topParams
+        saveResultsAsCSV(results, regressorName, parameter)
 
+    return bestParams
 
-def tuneNValue(nValues, classifier, classifierName, jsonFileNames):
+def tuneNValue(nValues, regressor, regressorName, jsonFileNames):
     """
-    This function will run the classifier for every n value and record the
+    This function will run the regressor for every n value and record the
     accuracy and time for each. The result will be saved in a file called
-    <classifierName>_number_data_points.csv
+    <regressorName>_number_data_points.csv
 
     :param nValues: Values of n to run
-    :param classifier:
-    :param classifierName: May not contain spaces
+    :param regressor:
+    :param regressorName: May not contain spaces
     :return:
     """
-    if ' ' in classifierName:
-        raise Exception('No spaces allowed in classifierName')
+    if ' ' in regressorName:
+        raise Exception('No spaces allowed in regressorName')
 
     jsonData = retrieveJsonData(jsonFileNames)
 
     data = pd.DataFrame.from_dict(jsonData, orient='columns')
-    data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
-    data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
-
-    labelColumnName = 'sentimentScore'
 
     columnNames = []
     columnNames.extend(featureColumnNames)
@@ -179,67 +182,70 @@ def tuneNValue(nValues, classifier, classifierName, jsonFileNames):
         print 'Training n value', nValue
 
         startTime = time()
-        classifier.fit(trainData, trainLabels)
+        regressor.fit(trainData, trainLabels)
         totalTime = time() - startTime
-        predictions = classifier.predict(testData)
-        testAccuracy = metrics.accuracy_score(testLabels, predictions)
-        trainPredictions = classifier.predict(trainData)
-        trainAccuracy = metrics.accuracy_score(trainLabels, trainPredictions)
+        predictions = regressor.predict(testData)
+        explained_variance = metrics.explained_variance_score(testLabels, predictions)
+        neg_mean_absolute_error = metrics.mean_absolute_error(testLabels, predictions)
+        neg_mean_squared_error = metrics.mean_squared_error(testLabels, predictions)
+        neg_median_absolute_error = metrics.median_absolute_error(testLabels, predictions)
+        r2 = metrics.r2_score(testLabels, predictions)
+        # testAccuracy = metrics.accuracy_score(testLabels, predictions)
+        # trainPredictions = regressor.predict(trainData)
+        # trainAccuracy = metrics.accuracy_score(trainLabels, trainPredictions)
         results.append({
             'time': totalTime,
-            'testAccuracy': testAccuracy,
-            'trainAccuracy': trainAccuracy
+            'explained_variance': explained_variance,
+            'neg_mean_absolute_error': neg_mean_absolute_error,
+            'neg_mean_squared_error': neg_mean_squared_error,
+            'neg_median_absolute_error': neg_median_absolute_error,
+            'r2': r2,
         })
 
     resultsDataFrame = pd.DataFrame(results)
     resultsDataFrame.index = nValues
-    saveResultsAsCSV(resultsDataFrame, classifierName, 'number_data_points')
+    saveResultsAsCSV(resultsDataFrame, regressorName, 'number_data_points')
 
 
-def runClassifier(classifier, classifierName, jsonFileNames, numDataPoints=None):
+def runRegressor(regressor, regressorName, jsonFileNames, numDataPoints=None):
     """
-    This function will run the provided classifier for a specific set of parameters
-    Results will be saved to a file called <classifierName>_finalResults.csv
+    This function will run the provided regressor for a specific set of parameters
+    Results will be saved to a file called <regressorName>_finalResults.csv
 
-    :param classifierName: May not contain spaces
-    :param classifier: Classifier should already be configured with parameters
+    :param regressorName: May not contain spaces
+    :param regressor: Classifier should already be configured with parameters
     :param jsonFileNames:
     :param numDataPoints: Default is None. If not none, will sample the data and use only
                             given number of data points.
     :return:
     """
-    if ' ' in classifierName:
-        raise Exception('No spaces allowed in classifierName')
+    if ' ' in regressorName:
+        raise Exception('No spaces allowed in regressorName')
 
     jsonData = retrieveJsonData(jsonFileNames)
 
     data = pd.DataFrame.from_dict(jsonData, orient='columns')
-    data['sentimentScore'] = data['sentiment'].apply(isLabelPositive)
-    data['sentimentLabel'] = data['sentimentScore'].apply(toLabelName)
-
-    labelColumnName = 'sentimentScore'
 
     usableColumnNames = []
     usableColumnNames.extend(featureColumnNames)
     usableColumnNames.append(labelColumnName)
 
-    usableData = data[usableColumnNames].dropna()
-    usableData = usableData[usableData['sentimentScore'] != 0]
+    finalData = data[usableColumnNames]
     if numDataPoints != None:
-        usableData = randomSampleDatapoints(usableData, numDataPoints)
+        finalData = randomSampleDatapoints(finalData, numDataPoints)
 
-    trainPercentage = .75
-    trainData, testData, trainLabels, testLabels = train_test_split(usableData[featureColumnNames],
-                                                                    usableData[labelColumnName],
+    trainPercentage = .8
+    trainData, testData, trainLabels, testLabels = train_test_split(finalData[featureColumnNames],
+                                                                    finalData[labelColumnName],
                                                                     train_size=trainPercentage)
     print ''
     print('Number of observations in the training data:', len(trainData))
     print('Number of observations in the test data:', len(testData))
 
-    print "Fitting ", classifierName
-    classifier.fit(trainData, trainLabels)
+    print "Fitting ", regressorName
+    regressor.fit(trainData, trainLabels)
 
-    saveResultsFromTrainedClassifier(classifier, classifierName, trainData, trainLabels, testData, testLabels)
+    saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels)
 
 
 def computeNumCombinations(parameterGrid):
@@ -259,10 +265,8 @@ def isLabelPositive(label):
 
 
 def toLabelName(label):
-    if label == 2:
+    if label == -1:
         return 'negative'
-    elif label == 0:
-        return 'neutral'
     else:
         return 'positive'
 
@@ -284,15 +288,15 @@ def randomSampleDatapoints(data, sampleSize):
         raise Exception('Not enough data to take a random sample of size: ', sampleSize)
 
 
-def saveResultsAsCSV(parameterResults, classifierName, additionalName):
-    resultsPath = utils.getFullPathFromResultFileName('gridResults/' + classifierName + '_' + additionalName + '.csv')
+def saveResultsAsCSV(parameterResults, regressorName, additionalName):
+    resultsPath = utils.getFullPathFromResultFileName('gridResults/' + regressorName + '_' + additionalName + '.csv')
     parameterResults.to_csv(resultsPath, sep=',')
 
 
-def evaluateParameter(classifier, trainData, trainLabels, parameter, parameterOptions):
+def evaluateParameter(regressor, trainData, trainLabels, parameter, parameterOptions):
     parameterGrid = {parameter: parameterOptions}
 
-    grid_search = GridSearchCV(classifier, param_grid=parameterGrid, verbose=1)
+    grid_search = GridSearchCV(regressor, param_grid=parameterGrid, verbose=1)
     grid_search.fit(trainData, trainLabels)
 
     resultsDict = grid_search.cv_results_
@@ -302,9 +306,9 @@ def evaluateParameter(classifier, trainData, trainLabels, parameter, parameterOp
     return resultsDataFrame
 
 
-def evaluateParameters(classifier, trainData, trainLabels, parameterGrid):
+def evaluateParameters(regressor, trainData, trainLabels, parameterGrid):
     print "Running Grid Search"
-    grid_search = GridSearchCV(classifier, param_grid=parameterGrid, verbose=1)
+    grid_search = GridSearchCV(regressor, param_grid=parameterGrid, verbose=1)
     grid_search.fit(trainData, trainLabels)
 
     resultsDict = grid_search.cv_results_
@@ -317,63 +321,74 @@ def evaluateParameters(classifier, trainData, trainLabels, parameterGrid):
 def printReleventResults(results):
     for result in results:
         print ''
-        print result['classifierType']
+        print result['regressorType']
         print 'Train Accuracy: ', result['trainAccuracy']
         print 'Test Accuracy: ', result['testAccuracy']
         print 'Confusion Matrix: '
         print result['confusionMatrix']
-        if "RandomForest" in str(result['classifierType']):
+        if "RandomForest" in str(result['regressorType']):
             print 'Feature Importance: '
             print result['featureImportance']
 
 
-def saveResultsFromTrainedClassifier(classifier, classifierName, trainData, trainLabels, testData, testLabels):
+def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels):
     result = {}
 
-    print 'Running classifier: ', str(type(classifier))
+    print 'Running regressor: ', str(type(regressor))
 
-    result['classifierType'] = str(type(classifier))
+    result['regressorType'] = str(type(regressor))
 
-    predictions = classifier.predict(testData)
+    predictions = regressor.predict(testData)
+    result['actualVsPrediction'] = zip(testLabels,predictions.tolist())
 
-    trainAccuracy = metrics.accuracy_score(trainLabels, classifier.predict(trainData))
-    testAccuracy = metrics.accuracy_score(testLabels, predictions)
-    result['trainAccuracy'] = trainAccuracy
-    result['testAccuracy'] = testAccuracy
+    # trainAccuracy = metrics.accuracy_score(trainLabels, regressor.predict(trainData))
+    # testAccuracy = metrics.accuracy_score(testLabels, predictions)
+    explained_variance = metrics.explained_variance_score(testLabels, predictions)
+    neg_mean_absolute_error = metrics.mean_absolute_error(testLabels, predictions)
+    neg_mean_squared_error = metrics.mean_squared_error(testLabels, predictions)
+    neg_median_absolute_error = metrics.median_absolute_error(testLabels, predictions)
+    r2 = metrics.r2_score(testLabels, predictions)
+    # result['trainAccuracy'] = trainAccuracy
+    # result['testAccuracy'] = testAccuracy
+    result['explained_variance'] = explained_variance
+    result['neg_mean_absolute_error'] = neg_mean_absolute_error
+    result['neg_mean_squared_error'] = neg_mean_squared_error
+    result['neg_median_absolute_error'] = neg_median_absolute_error
+    result['r2'] = r2
+
+    # try:
+    #     predictProbabilities = regressor.predict_proba(testData)
+    #     logLoss = metrics.log_loss(testLabels, predictProbabilities)
+    #     result['logLoss'] = logLoss
+    # except:
+    #     pass
+    #
+    # try:
+    #     precision = metrics.precision_score(testLabels, predictions)
+    #     result['precision'] = precision
+    # except:
+    #     pass
+    #
+    # try:
+    #     recall = metrics.recall_score(testLabels, predictions)
+    #     result['recall'] = recall
+    # except:
+    #     pass
+    #
+    # try:
+    #     rocAuc = metrics.roc_auc_score(testLabels, predictions)
+    #     result['rocAuc'] = rocAuc
+    # except:
+    #     pass
+    #
+    # try:
+    #     confusionMatrix = metrics.confusion_matrix(testLabels, predictions)
+    #     result['confusionMatrix'] = confusionMatrix.tolist()
+    # except:
+    #     pass
 
     try:
-        confusionMatrix = metrics.confusion_matrix(testLabels, predictions).toList()
-        result['confusionMatrix'] = confusionMatrix
-    except:
-        pass
-
-    try:
-        predictProbabilities = classifier.predict_proba(testData)
-        logLoss = metrics.log_loss(testLabels, predictProbabilities)
-        result['logLoss'] = logLoss
-    except:
-        pass
-
-    try:
-        precision = metrics.precision_score(testLabels, predictions)
-        result['precision'] = precision
-    except:
-        pass
-
-    try:
-        recall = metrics.recall_score(testLabels, predictions)
-        result['recall'] = recall
-    except:
-        pass
-
-    try:
-        rocAuc = metrics.roc_auc_score(testLabels, predictions)
-        result['rocAuc'] = rocAuc
-    except:
-        pass
-
-    try:
-        featureImportanceRaw = zip(trainData, classifier.feature_importances_)
+        featureImportanceRaw = zip(trainData, regressor.feature_importances_)
         featureImportance = {}
         for feature, importance in featureImportanceRaw:
             featureImportance[feature] = importance
@@ -381,7 +396,7 @@ def saveResultsFromTrainedClassifier(classifier, classifierName, trainData, trai
     except:
         pass
 
-    fullPath = utils.getFullPathFromResultFileName(classifierName + '_finalResults' + '.json')
+    fullPath = utils.getFullPathFromResultFileName(regressorName + '_finalResults' + '.json')
     obj = open(fullPath, 'wb')
     resultsJson = json.dumps(result)
     obj.write(resultsJson)
