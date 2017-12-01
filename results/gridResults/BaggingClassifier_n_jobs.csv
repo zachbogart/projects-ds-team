@@ -1,0 +1,2 @@
+params,mean_fit_time,mean_score_time,mean_test_score,mean_train_score,param_n_jobs,rank_test_score,split0_test_score,split0_train_score,split1_test_score,split1_train_score,split2_test_score,split2_train_score,std_fit_time,std_score_time,std_test_score,std_train_score
+{'n_jobs': 6},2.38240631421,2.26482256254,0.507066666667,0.576599989295,6,1,0.507849215078,0.576828841442,0.5074,0.5755,0.50595059506,0.577471126444,0.0722235756835,0.0183069830369,0.000810153408701,0.000820818633264

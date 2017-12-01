@@ -1,0 +1,2 @@
+params,mean_fit_time,mean_score_time,mean_test_score,mean_train_score,param_priors,rank_test_score,split0_test_score,split0_train_score,split1_test_score,split1_train_score,split2_test_score,split2_train_score,std_fit_time,std_score_time,std_test_score,std_train_score
+{'priors': None},0.014149983724,0.00582400957743,0.529166666667,0.532116666667,,1,0.5402,0.542,0.5409,0.54185,0.5064,0.5125,0.000143869276936,0.000150431144591,0.016101000659,0.013871213197

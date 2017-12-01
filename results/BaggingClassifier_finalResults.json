@@ -1,0 +1,1 @@
+{"classifierType": "<class 'sklearn.ensemble.bagging.BaggingClassifier'>", "trainAccuracy": 0.5294600728347496, "recall": 0.8125300865318007, "precision": 0.5408717535893207, "logLoss": 0.6952575498400648, "testAccuracy": 0.5268157981405011, "rocAuc": 0.5023583313119944}

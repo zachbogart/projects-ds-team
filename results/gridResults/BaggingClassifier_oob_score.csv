@@ -1,0 +1,2 @@
+params,mean_fit_time,mean_score_time,mean_test_score,mean_train_score,param_oob_score,rank_test_score,split0_test_score,split0_train_score,split1_test_score,split1_train_score,split2_test_score,split2_train_score,std_fit_time,std_score_time,std_test_score,std_train_score
+{'oob_score': False},0.431749264399,0.0196100870768,0.5117,0.575849969294,False,1,0.512948705129,0.575228761438,0.5116,0.57525,0.510551055106,0.577071146443,0.0177038462132,0.000101272686397,0.000981387247725,0.000863546173724
