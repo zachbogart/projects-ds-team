@@ -52,18 +52,18 @@ def tuneRandomForestNValues():
 def tuneRandomForestParametersIndividually(decentNValues):
     # This should be a list of all your parameters with a wide range of possible values
     parameterGrid = {
-        "n_estimators": np.arange(5, 500, 15),
-        "max_depth": np.arange(1, 22, 1),
-        "min_samples_split": np.arange(2, 150, 8),
-        "min_samples_leaf": np.arange(1, 60, 2),
-        "max_leaf_nodes": np.arange(2, 40, 2),
+        "n_estimators": np.arange(10, 500, 40),
+        "max_depth": np.arange(1, 14, 1),
+        "min_samples_split": np.arange(2, 203, 10),
+        "min_samples_leaf": np.arange(1, 81, 4),
+        "max_leaf_nodes": np.arange(2, 20, 1),
         "min_weight_fraction_leaf": np.arange(0.1, 0.4, 0.1),
         "max_features": ["auto", "sqrt", "log2"]
     }
 
     threeBestParams = machineLearning.tuneParametersIndividually(parameterGrid, classifierName, classifier,
                                                                  jsonFileNames,
-                                                                 decentNValue, 3)
+                                                                 decentNValue, 2)
     return threeBestParams
 
 
