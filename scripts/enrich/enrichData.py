@@ -1,7 +1,7 @@
 import json
 
 import os
-
+import pandas as pd
 import time
 
 from scripts.enrich.clean import clean
@@ -26,17 +26,17 @@ def enrichAllPlaces():
             if cityDataExists(cityName):
                 print 'City Data found for: ', cityProperName
 
-                # # Enrich with weather data
-                # print 'Enriching with Weather Data'
-                # augmentWeather.enrichWithWeather(cityName, coordinates)
+                # Enrich with weather data
+                print 'Enriching with Weather Data'
+                augmentWeather.enrichWithWeather(cityName, coordinates)
 
-                # # Enrich with sentiment
-                # print 'Enriching with Sentiment'
-                # sentiment.enrichWithSentiment(cityName)
-                #
-                # # Clean data
-                # print 'Cleaning Data'
-                # clean.clean(cityName)
+                # Enrich with sentiment
+                print 'Enriching with Sentiment'
+                sentiment.enrichWithSentiment(cityName)
+
+                # Clean data
+                print 'Cleaning Data'
+                clean.clean(cityName)
 
                 # Group Data
                 print 'Grouping Data'
@@ -44,6 +44,39 @@ def enrichAllPlaces():
 
             else:
                 print 'No data file found for: ', cityProperName
+
+
+def enrichAllRedditPlaces():
+    with open(utils.getFullPathFromDataFileName('places.json')) as data_file:
+        places = json.load(data_file)
+        placeCoordinateDictionary = {}
+        for place in places:
+            cityName = place["name"]
+            cityProperName = place["properName"]
+            coordinates = place["coordinates"]
+            placeCoordinateDictionary[cityName] = str(coordinates)
+
+        print ''
+        print ''
+        print 'About to enrich all reddit data'
+
+        fileName = 'reddit/allRedditComments'
+
+        # # Enrich with weather data
+        # print 'Enriching with Weather Data'
+        # augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
+
+        # Enrich with sentiment
+        print 'Enriching with Sentiment'
+        sentiment.enrichWithSentiment(fileName)
+
+        # # Clean data
+        # print 'Cleaning Data'
+        # clean.clean(fileName)
+        #
+        # # Group Data
+        # print 'Grouping Data'
+        # groupDataByHour(fileName)
 
 
 def groupDataByHour(cityName):
@@ -125,4 +158,6 @@ def cityDataExists(cityName):
     return os.path.isfile(cityFilePath)
 
 
-enrichAllPlaces()
+# redditCsvToJson()
+# enrichAllPlaces()
+enrichAllRedditPlaces()

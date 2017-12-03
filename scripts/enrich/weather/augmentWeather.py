@@ -16,13 +16,15 @@
 # In[15]:
 import json
 
+import math
+
 from scripts.enrich.weather import getNewWeather
 from scripts.utils import utils
 
 
-def getWeather(created_at, weather):
+def getWeatherAtDatetime(created_at, weather):
     from datetime import datetime
-    d = str(created_at)
+    d = str(int(created_at))
     d = int(d[:10])
     tweet_year = datetime.fromtimestamp(d).strftime('%Y')
     tweet_month = datetime.fromtimestamp(d).strftime('%m')
@@ -38,29 +40,55 @@ def getWeather(created_at, weather):
 # In[16]:
 
 def enrichWithWeather(location_name, coordinates):
-    weather = getNewWeather.getWeatherForCoordinates(coordinates)
-    print 'weather length = ' + str(len(weather)) + ' days of data'
+    actualCityNameMap = {
+        'chicago': 'chicago',
+        'asburyPark': 'asburyPark',
+        'denver': 'denver',
+        'detroit': 'detroit',
+        'houston': 'houston',
+        'nyc': 'manhattan',
+        'Phoenix': 'phoenix',
+        'sanFrancisco': 'sanFrancisco',
+        'seattle': 'seattle',
+    }
+    locationWeatherDictionary = {}
+    print 'Getting weather data'
+    if type(coordinates) == str:
+        # weather = None
+        weather = getNewWeather.getWeatherForCoordinates(coordinates)
+        locationWeatherDictionary[location_name] = weather
+    else:
+        for place, coordinate in coordinates.iteritems():
+            weather = getNewWeather.getWeatherForCoordinates(coordinate)
+            # weather = None
+            locationWeatherDictionary[place] = weather
 
     dataFilePath = utils.getFullPathFromDataFileName(location_name + '.json')
     with open(dataFilePath) as data_file:
         jsonData = json.load(data_file)
         print 'Adding weather to data of length = ' + str(len(jsonData))
 
-    count = 0
-    for dataObject in jsonData:
-        if count % 100000 == 0:
-            print "Adding weather data: ", count
-        count = count + 1
+        count = 0
+        for dataObject in jsonData:
+            if count % 100000 == 0:
+                print "Adding weather data: ", count
+            count = count + 1
 
-        datetime = dataObject['created_at']['$date']
-        tweetWeather = getWeather(datetime, weather)
+            datetime = dataObject['created']
+            city_ = dataObject['city']
+            try:
+                place = actualCityNameMap[city_]
+                weather = locationWeatherDictionary[place]
+                tweetWeather = getWeatherAtDatetime(datetime, weather)
 
-        dataObject.update(tweetWeather)
+                dataObject.update(tweetWeather)
+            except:
+                print city_
 
-    outputPath = utils.getFullPathFromDataFileName(location_name + '_weather.json')
-    print 'Saving file: ', outputPath
-    with open(outputPath, 'w') as outfile:
-        json.dump(jsonData, outfile)
+        outputPath = utils.getFullPathFromDataFileName(location_name + '_weather.json')
+        print 'Saving file: ', outputPath
+        with open(outputPath, 'w') as outfile:
+            json.dump(jsonData, outfile)
 
     print 'Saved file: ', outputPath
 
