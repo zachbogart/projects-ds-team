@@ -16,14 +16,15 @@ def clean(cityName):
                 print "Cleaning data -- count: ", count
             count = count + 1
 
-            if hasNonNegativeSentiment(dataEntry):
-                dataEntry = fixWeatherData(dataEntry)
-                dataEntry = addSentimentLabel(dataEntry)
+            if hasNonNegativeSentiment(dataEntry) and hasWeatherData(dataEntry):
+                addCreatedField(dataEntry)
+                fixWeatherData(dataEntry)
+                addSentimentLabel(dataEntry)
                 cleanData.append(dataEntry)
 
+    print 'Saving file: ', outputPath
     with open(outputPath, 'w') as outfile:
         json.dump(cleanData, outfile)
-
     print 'Saved file: ', outputPath
 
 
@@ -38,7 +39,17 @@ def isLabelPositive(label):
 
 def addSentimentLabel(dataEntry):
     dataEntry['sentimentScore'] = isLabelPositive(dataEntry['sentiment'])
-    return dataEntry
+    # return dataEntry
+
+def hasWeatherData(dataEntry):
+    return 'temperature' in dataEntry
+
+def addCreatedField(dataEntry):
+    if 'created' in dataEntry: # Reddit Data
+        dataEntry['created'] = int(dataEntry['created'])
+    else: # Twitter data
+        dataEntry['created'] = int(dataEntry['created_at']['$date'] / 1e3)
+    # return dataEntry
 
 
 def fixWeatherData(dataEntry):
@@ -66,12 +77,12 @@ def fixWeatherData(dataEntry):
 
         # handle cloudCover
     iconDict = {'fog': .7, 'clear-night': 0, 'clear-day': 0, 'partly-cloudy-day': .3, 'cloudy': .5,
-                u'partly-cloudy-night': .3, 'wind': .5, 'rain': .9}
+                'partly-cloudy-night': .3, 'wind': .5, 'rain': .9, 'snow': 1}
 
     if 'cloudCover' not in dataEntry:
         dataEntry['cloudCover'] = iconDict[dataEntry['icon']]
 
-    return dataEntry
+    # return dataEntry
 
 
 def hasNonNegativeSentiment(dataEntry):
