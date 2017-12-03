@@ -137,11 +137,14 @@ def groupDataByHour(cityName):
                     'timeHour': timeHour,
                     'created': dataEntry['created'],
                     'time': dataEntry['time'],
-                    'location': dataEntry['location'],
                     'sentiment_average': sentimentScore,
                     'sentiment_percent_positive': sentiment,
                     'num_data': 1.0
                 }
+                if 'location' in dataEntry:
+                    newDataEntry['location'] = dataEntry['location']
+                if 'city' in dataEntry:
+                    newDataEntry['location'] = dataEntry['city']
                 for weatherColumn in weatherColumnNames:
                     newDataEntry[weatherColumn] = dataEntry[weatherColumn]
                 groupedData[timeHour] = newDataEntry
