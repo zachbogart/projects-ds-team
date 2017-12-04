@@ -1,7 +1,5 @@
 # coding: utf-8
 
-# In[14]:
-
 ############### READ ME ##############################
 # usage: 
 # input (default values show): augmentWeather(start_year=2017,end_year=2017,stationID='725030-14732',location_name='manhattan', root_path='../../')
@@ -13,7 +11,6 @@
 #####################################################
 
 
-# In[15]:
 import json
 
 import math
@@ -32,12 +29,20 @@ def getWeatherAtDatetime(created_at, weather):
     tweet_hour = int(datetime.fromtimestamp(d).strftime('%I'))
 
     weatherKey = tweet_year + '-' + tweet_month + '-' + tweet_day
-    weatherDataDaily = weather[weatherKey]['data']
-    weatherDataHourly = weatherDataDaily[tweet_hour]
-    return weatherDataHourly
+    if weatherKey not in weather:
+        print ''
+        # print weather
+        # print ''
+        print weatherKey
+        if int(tweet_year) <= 2015 and int(tweet_month) <= 4 or int(tweet_year) < 2015:
+            return []
+        else:
+            raise Exception("No Weather for this: " + weatherKey)
+    else:
+        weatherDataDaily = weather[weatherKey]['data']
+        weatherDataHourly = weatherDataDaily[tweet_hour]
+        return weatherDataHourly
 
-
-# In[16]:
 
 def enrichWithWeather(location_name, coordinates):
     actualCityNameMap = {
@@ -86,7 +91,7 @@ def enrichWithWeather(location_name, coordinates):
             # try:
             place = actualCityNameMap[city_]
             weather = locationWeatherDictionary[place]
-            tweetWeather = getWeatherAtDatetime(datetime, weather)
+            tweetWeather = getWeatherAtDatetime(datetime, locationWeatherDictionary[place])
 
             dataObject.update(tweetWeather)
             # except:

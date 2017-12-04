@@ -62,17 +62,17 @@ def enrichAllRedditPlaces():
 
         fileName = 'reddit/allRedditComments'
 
-        # # Enrich with weather data
-        # print 'Enriching with Weather Data'
-        # augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
+        # Enrich with weather data
+        print 'Enriching with Weather Data'
+        augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
 
-        # # Enrich with sentiment
-        # print 'Enriching with Sentiment'
-        # sentiment.enrichWithSentiment(fileName)
+        # Enrich with sentiment
+        print 'Enriching with Sentiment'
+        sentiment.enrichWithSentiment(fileName)
 
-        # # Clean data
-        # print 'Cleaning Data'
-        # clean.clean(fileName)
+        # Clean data
+        print 'Cleaning Data'
+        clean.clean(fileName)
 
         # Group Data
         print 'Grouping Data'
@@ -164,5 +164,5 @@ def cityDataExists(cityName):
 
 
 # redditCsvToJson()
-enrichAllPlaces()
-# enrichAllRedditPlaces()
+# enrichAllPlaces()
+enrichAllRedditPlaces()

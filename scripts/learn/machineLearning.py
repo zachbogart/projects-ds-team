@@ -93,7 +93,8 @@ def tuneParameters(parameterGrid, regressorName, regressor, jsonFileNames, numDa
     return bestParams
 
 
-def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints, numTopParameters, dataSource='twitter'):
+def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints, numTopParameters,
+                               dataSource='twitter'):
     """
     This function will run through each parameter and try every value independent of any
     other variable. The result will be saved in separate files named
@@ -140,6 +141,7 @@ def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFile
 
     return bestParams
 
+
 def tuneNValue(nValues, regressor, regressorName, jsonFileNames, dataSource='twitter'):
     """
     This function will run the regressor for every n value and record the
@@ -182,21 +184,16 @@ def tuneNValue(nValues, regressor, regressorName, jsonFileNames, dataSource='twi
         regressor.fit(trainData, trainLabels)
         totalTime = time() - startTime
         predictions = regressor.predict(testData)
-        explained_variance = metrics.explained_variance_score(testLabels, predictions)
-        neg_mean_absolute_error = metrics.mean_absolute_error(testLabels, predictions)
-        neg_mean_squared_error = metrics.mean_squared_error(testLabels, predictions)
-        neg_median_absolute_error = metrics.median_absolute_error(testLabels, predictions)
-        r2 = metrics.r2_score(testLabels, predictions)
+        testR2 = metrics.r2_score(testLabels, predictions)
+        trainPredictions = regressor.predict(trainData)
+        trainR2 = metrics.r2_score(trainLabels, trainPredictions)
         # testAccuracy = metrics.accuracy_score(testLabels, predictions)
         # trainPredictions = regressor.predict(trainData)
         # trainAccuracy = metrics.accuracy_score(trainLabels, trainPredictions)
         results.append({
             'time': totalTime,
-            'explained_variance': explained_variance,
-            'neg_mean_absolute_error': neg_mean_absolute_error,
-            'neg_mean_squared_error': neg_mean_squared_error,
-            'neg_median_absolute_error': neg_median_absolute_error,
-            'r2': r2,
+            'trainR2': trainR2,
+            'testR2': testR2,
         })
 
     resultsDataFrame = pd.DataFrame(results)
@@ -286,7 +283,8 @@ def randomSampleDatapoints(data, sampleSize):
 
 
 def saveResultsAsCSV(parameterResults, regressorName, additionalName, dataSource):
-    resultsPath = utils.getFullPathFromResultFileName(dataSource + '/' + 'gridResults/' + regressorName + '_' + additionalName + '.csv')
+    resultsPath = utils.getFullPathFromResultFileName(
+        dataSource + '/' + 'gridResults/' + regressorName + '_' + additionalName + '.csv')
     parameterResults.to_csv(resultsPath, sep=',')
 
 
@@ -328,7 +326,8 @@ def printReleventResults(results):
             print result['featureImportance']
 
 
-def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels, dataSource):
+def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels,
+                                     dataSource):
     result = {}
 
     print 'Running regressor: ', str(type(regressor))
@@ -336,7 +335,7 @@ def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainL
     result['regressorType'] = str(type(regressor))
 
     predictions = regressor.predict(testData)
-    result['actualVsPrediction'] = zip(testLabels,predictions.tolist())
+    result['actualVsPrediction'] = zip(testLabels, predictions.tolist())
 
     # trainAccuracy = metrics.accuracy_score(trainLabels, regressor.predict(trainData))
     # testAccuracy = metrics.accuracy_score(testLabels, predictions)
