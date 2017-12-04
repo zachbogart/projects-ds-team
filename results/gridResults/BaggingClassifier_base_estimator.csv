@@ -1,2 +1,0 @@
-params,mean_fit_time,mean_score_time,mean_test_score,mean_train_score,param_base_estimator,rank_test_score,split0_test_score,split0_train_score,split1_test_score,split1_train_score,split2_test_score,split2_train_score,std_fit_time,std_score_time,std_test_score,std_train_score
-{'base_estimator': None},0.431779066722,0.0200179417928,0.512266666667,0.576483304295,,1,0.51504849515,0.57602880144,0.5156,0.57565,0.506150615062,0.577771111444,0.00566197040786,0.000407248540477,0.00433023484004,0.000923655084852

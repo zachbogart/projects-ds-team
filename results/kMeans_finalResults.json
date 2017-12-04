@@ -1,1 +1,0 @@
-{"trainAccuracy": 0.009586741964427086, "classifierType": "<class 'sklearn.cluster.k_means_.KMeans'>", "rocAuc": 0.5035088049341256, "testAccuracy": 0.00958249942999012}

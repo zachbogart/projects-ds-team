@@ -1,2 +1,0 @@
-params,mean_fit_time,mean_score_time,mean_test_score,mean_train_score,param_verbose,rank_test_score,split0_test_score,split0_train_score,split1_test_score,split1_train_score,split2_test_score,split2_train_score,std_fit_time,std_score_time,std_test_score,std_train_score
-{'verbose': 1},0.433079640071,0.0196706453959,0.511566666667,0.576099997628,1,1,0.507349265073,0.576628831442,0.513,0.5749,0.514351435144,0.576771161442,0.0126037739246,0.000135218067144,0.0030329775945,0.000850513643768
