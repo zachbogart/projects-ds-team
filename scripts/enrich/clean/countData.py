@@ -13,19 +13,24 @@ from scripts.utils import utils
 def countAllPlaces():
     with open(utils.getFullPathFromDataFileName('places.json')) as data_file:
         places = json.load(data_file)
-
+        sum = 0
         placeCounts = []
         for place in places:
             cityName = place["name"]
             cityProperName = place["properName"]
 
             if cityDataExists(cityName):
-                placeCounts.append((cityProperName, countGroupData(cityName)))
+                count = countGroupData(cityName)
+                placeCounts.append((cityProperName, count))
+                sum = sum + count
             else:
                 print 'No data file found for: ', cityProperName
         placeCountsSorted = sorted(((v, k) for k, v in placeCounts), reverse=True)
         for key, value in placeCountsSorted:
             print value + ': ' + str(key)
+        print sum
+
+
 
 
 def countData(cityName):
@@ -39,6 +44,14 @@ def countGroupData(cityName):
     inputPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment_clean_grouped.json')
     with open(inputPath) as data_file:
         dataEntries = json.load(data_file)
+        for data in dataEntries:
+            if data['sentiment_average'] < -1 or data['sentiment_average'] > 1:
+                print 'average is bad'
+                print data
+            if data['sentiment_percent_positive'] < 0 or data['sentiment_percent_positive'] > 1:
+                print 'percent is bad:'
+                print data
+
         return len(dataEntries)
 
 
@@ -68,4 +81,4 @@ def cityDataExists(cityName):
     return os.path.isfile(cityFilePath)
 
 
-countRedditData()
+countAllPlaces()
