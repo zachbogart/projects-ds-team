@@ -119,7 +119,6 @@ def groupDataByHour(cityName):
                     'cloudCover',
                     'temperature',
                     'dewPoint',
-                    'windBearing',
                     'visibility',
                     'apparentTemperature',
                     'pressure',
@@ -165,5 +164,5 @@ def cityDataExists(cityName):
 
 
 # redditCsvToJson()
-# enrichAllPlaces()
-enrichAllRedditPlaces()
+enrichAllPlaces()
+# enrichAllRedditPlaces()

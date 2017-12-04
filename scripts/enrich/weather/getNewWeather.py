@@ -1,6 +1,8 @@
 
 
 import urllib
+
+import os
 import requests
 import json
 import time as tm
@@ -10,9 +12,12 @@ from scripts.utils import utils
 
 def getPresavedWeatherData(gps):
     weatherDataPath = utils.getFullPathFromDataFileName('weather/weatherData_' + gps + '.json')
-    data_file = open(weatherDataPath)
-    json_data = json.load(data_file)
-    return json_data
+    if os.path.isfile(weatherDataPath):
+        data_file = open(weatherDataPath)
+        json_data = json.load(data_file)
+        return json_data
+    else:
+        return dict()
 
 
 def savePresavedWeatherData(gps, json_data):
@@ -27,22 +32,28 @@ def getWeatherForCoordinates(gps):
     may012015 = 1430452800
     oct252017 = 1508889600
     nov302017 = 1511991800
+    dec32017 = 1512351074+86400
     oneDayInSeconds = 86400
 
     presavedWeather = getPresavedWeatherData(gps)
     weatherChanged = False
 
-    for t in range(may012015, nov302017, oneDayInSeconds):
+    for t in range(may012015, dec32017, oneDayInSeconds):
         url = base_url + gps + ',' + str(t)
         day = tm.strftime('%Y-%m-%d', tm.localtime(t))
+        # print url
         if day not in presavedWeather:
-            response = urllib.urlopen(url)
-            if response.code == 403:
-                raise Exception("Weather API call received 403 Error")
-            data = json.loads(response.read())
-            hourly = data['hourly']
-            presavedWeather[day] = hourly
-            weatherChanged = True
+            try:
+                response = urllib.urlopen(url)
+                if response.code == 403:
+                    raise Exception("Weather API call received 403 Error")
+                data = json.loads(response.read())
+                hourly = data['hourly']
+                presavedWeather[day] = hourly
+                weatherChanged = True
+            except:
+                print "failed to get data from: " + url
+                pass
 
     if weatherChanged:
         savePresavedWeatherData(gps, presavedWeather)
