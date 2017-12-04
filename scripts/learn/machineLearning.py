@@ -1,15 +1,13 @@
 import json
-import pandas as pd
+from time import time
+
 import numpy as np
-from bson import json_util
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingRegressor, VotingClassifier, BaggingClassifier, \
-    ExtraTreesClassifier
-from sklearn.model_selection import train_test_split
+import pandas as pd
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
+
 from scripts.utils import utils
-from time import time
-from random import random
 
 np.random.seed(7)
 pd.options.mode.chained_assignment = None  # Removes unnecessary warning
@@ -44,7 +42,7 @@ featureColumnNames = [
 labelColumnName = 'sentiment_average'
 
 
-def tuneParameters(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints):
+def tuneParameters(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints, dataSource='twitter'):
     """
     This function should be called to find the best combination of
     parameters to run. Results will be written as csv file in the form
@@ -92,11 +90,11 @@ def tuneParameters(parameterGrid, regressorName, regressor, jsonFileNames, numDa
     for parameter in parameterGrid:
         value = bestResult['param_' + parameter][0]
         bestParams[parameter] = value
-    saveResultsAsCSV(results, regressorName, "parameterTuning")
+    saveResultsAsCSV(results, regressorName, "parameterTuning", dataSource)
     return bestParams
 
 
-def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints, numTopParameters):
+def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFileNames, numDataPoints, numTopParameters, dataSource='twitter'):
     """
     This function will run through each parameter and try every value independent of any
     other variable. The result will be saved in separate files named
@@ -139,11 +137,11 @@ def tuneParametersIndividually(parameterGrid, regressorName, regressor, jsonFile
         topRows = results.nlargest(numTopParameters, 'mean_test_score')
         topParams = topRows['param_' + parameter].tolist()
         bestParams[parameter] = topParams
-        saveResultsAsCSV(results, regressorName, parameter)
+        saveResultsAsCSV(results, regressorName, parameter, dataSource)
 
     return bestParams
 
-def tuneNValue(nValues, regressor, regressorName, jsonFileNames):
+def tuneNValue(nValues, regressor, regressorName, jsonFileNames, dataSource='twitter'):
     """
     This function will run the regressor for every n value and record the
     accuracy and time for each. The result will be saved in a file called
@@ -204,10 +202,10 @@ def tuneNValue(nValues, regressor, regressorName, jsonFileNames):
 
     resultsDataFrame = pd.DataFrame(results)
     resultsDataFrame.index = nValues
-    saveResultsAsCSV(resultsDataFrame, regressorName, 'number_data_points')
+    saveResultsAsCSV(resultsDataFrame, regressorName, 'number_data_points', dataSource)
 
 
-def runRegressor(regressor, regressorName, jsonFileNames, numDataPoints=None):
+def runRegressor(regressor, regressorName, jsonFileNames, numDataPoints=None, dataSource='twitter'):
     """
     This function will run the provided regressor for a specific set of parameters
     Results will be saved to a file called <regressorName>_finalResults.csv
@@ -245,7 +243,7 @@ def runRegressor(regressor, regressorName, jsonFileNames, numDataPoints=None):
     print "Fitting ", regressorName
     regressor.fit(trainData, trainLabels)
 
-    saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels)
+    saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels, dataSource)
 
 
 def computeNumCombinations(parameterGrid):
@@ -288,8 +286,8 @@ def randomSampleDatapoints(data, sampleSize):
         raise Exception('Not enough data to take a random sample of size: ', sampleSize)
 
 
-def saveResultsAsCSV(parameterResults, regressorName, additionalName):
-    resultsPath = utils.getFullPathFromResultFileName('gridResults/' + regressorName + '_' + additionalName + '.csv')
+def saveResultsAsCSV(parameterResults, regressorName, additionalName, dataSource):
+    resultsPath = utils.getFullPathFromResultFileName(dataSource + '/' + 'gridResults/' + regressorName + '_' + additionalName + '.csv')
     parameterResults.to_csv(resultsPath, sep=',')
 
 
@@ -331,7 +329,7 @@ def printReleventResults(results):
             print result['featureImportance']
 
 
-def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels):
+def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainLabels, testData, testLabels, dataSource):
     result = {}
 
     print 'Running regressor: ', str(type(regressor))
@@ -396,7 +394,7 @@ def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainL
     except:
         pass
 
-    fullPath = utils.getFullPathFromResultFileName(regressorName + '_finalResults' + '.json')
+    fullPath = utils.getFullPathFromResultFileName(dataSource + '/' + regressorName + '_finalResults' + '.json')
     obj = open(fullPath, 'wb')
     resultsJson = json.dumps(result)
     obj.write(resultsJson)
