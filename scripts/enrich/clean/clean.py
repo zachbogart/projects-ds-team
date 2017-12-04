@@ -61,6 +61,7 @@ def fixWeatherData(dataEntry):
     dataEntry['precipTypeRain'] = dataEntry['precipType'] == 'rain'
     dataEntry['precipTypeSnow'] = dataEntry['precipType'] == 'snow'
 
+
     # remove ozone, windGusts and uv index from the dataframe
     try:
         del dataEntry['ozone']
@@ -74,6 +75,11 @@ def fixWeatherData(dataEntry):
         del dataEntry['windGust']
     except KeyError:
         pass
+    try:
+        del dataEntry['windBearing']
+    except KeyError:
+        pass
+
 
         # handle cloudCover
     iconDict = {'fog': .7, 'clear-night': 0, 'clear-day': 0, 'partly-cloudy-day': .3, 'cloudy': .5,
