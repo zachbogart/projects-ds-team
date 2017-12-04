@@ -26,9 +26,9 @@ def enrichAllPlaces():
             if cityDataExists(cityName):
                 print 'City Data found for: ', cityProperName
 
-                # Enrich with weather data
-                print 'Enriching with Weather Data'
-                augmentWeather.enrichWithWeather(cityName, coordinates)
+                # # Enrich with weather data
+                # print 'Enriching with Weather Data'
+                # augmentWeather.enrichWithWeather(cityName, coordinates)
 
                 # Enrich with sentiment
                 print 'Enriching with Sentiment'
@@ -62,9 +62,9 @@ def enrichAllRedditPlaces():
 
         fileName = 'reddit/allRedditComments'
 
-        # Enrich with weather data
-        print 'Enriching with Weather Data'
-        augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
+        # # Enrich with weather data
+        # print 'Enriching with Weather Data'
+        # augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
 
         # Enrich with sentiment
         print 'Enriching with Sentiment'
@@ -136,8 +136,8 @@ def groupDataByHour(cityName):
                     'timeHour': timeHour,
                     'created': dataEntry['created'],
                     'time': dataEntry['time'],
-                    'sentiment_average': sentimentScore,
-                    'sentiment_percent_positive': sentiment,
+                    'sentiment_average': sentiment,
+                    'sentiment_percent_positive': sentimentScore,
                     'num_data': 1.0
                 }
                 if 'location' in dataEntry:

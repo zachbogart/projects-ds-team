@@ -16,7 +16,7 @@ def clean(cityName):
                 print "Cleaning data -- count: ", count
             count = count + 1
 
-            if hasNonNegativeSentiment(dataEntry) and hasWeatherData(dataEntry):
+            if hasNonNeutralSentiment(dataEntry) and hasWeatherData(dataEntry):
                 addCreatedField(dataEntry)
                 fixWeatherData(dataEntry)
                 addSentimentLabel(dataEntry)
@@ -91,7 +91,7 @@ def fixWeatherData(dataEntry):
     # return dataEntry
 
 
-def hasNonNegativeSentiment(dataEntry):
+def hasNonNeutralSentiment(dataEntry):
     if ('sentiment' not in dataEntry) or (dataEntry['sentiment'] == 0):
         return False
     return True
