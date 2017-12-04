@@ -99,13 +99,13 @@ def tuneRandomForestParameters(decentNValues, parameterGrid):
 #
 def runFineTunedRandomForest():
     bestRegressor = RandomForestRegressor(
-        n_estimators=330,
-        max_depth=2,
-        min_samples_split=192,
-        min_samples_leaf=77,
-        max_leaf_nodes=4,
-        min_weight_fraction_leaf=.2,
-        max_features="log2",
+        n_estimators=450,
+        max_depth=1,
+        min_samples_split=202,
+        min_samples_leaf=73,
+        max_leaf_nodes=2,
+        min_weight_fraction_leaf=.3,
+        max_features="auto",
         random_state=43,
     )
 
@@ -118,19 +118,19 @@ def runFineTunedRandomForest():
 # We want an n with a high accuracy but low run time
 decentNValue = 10000
 
-bestParams = tuneRandomForestParametersIndividually(decentNValue)
-print ''
-print ''
-print 'here are all possible best parameters'
-print bestParams
-print ''
-print ''
+# bestParams = tuneRandomForestParametersIndividually(decentNValue)
+# print ''
+# print ''
+# print 'here are all possible best parameters'
+# print bestParams
+# print ''
+# print ''
+#
+# bestParams = tuneRandomForestParameters(decentNValue, bestParams)
+# print ''
+# print ''
+# print 'here are actual best parameters'
+# print bestParams
 
-bestParams = tuneRandomForestParameters(decentNValue, bestParams)
-print ''
-print ''
-print 'here are actual best parameters'
-print bestParams
 
-
-# runFineTunedRandomForest()
+runFineTunedRandomForest()

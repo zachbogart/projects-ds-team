@@ -20,6 +20,10 @@ def enrichWithSentiment(cityName):
     inputFilePath = utils.getFullPathFromDataFileName(cityName + '_weather.json')
     outputFilePath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
 
+    if 'reddit' in cityName and sys.getdefaultencoding() != 'utf-8':
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+
     count = 0
     with open(inputFilePath) as data_file:
         data = json.load(data_file)
@@ -29,11 +33,12 @@ def enrichWithSentiment(cityName):
                 print "Adding sentiment data: ", count
             count = count + 1
             tweet_body = tweet['body']
-            if type(tweet_body) == unicode:
-                tweet_body = tweet_body.encode('utf-8')
-                tweet_body = tweet_body.strip()
-            else:
-                tweet_body = str(tweet_body)
+            if 'reddit' in cityName:
+                if type(tweet_body) == unicode:
+                    tweet_body = tweet_body.encode('utf-8')
+                    tweet_body = tweet_body.strip()
+                else:
+                    tweet_body = str(tweet_body)
             sent_score = 0
             try:
                 sent_score = getSentScore(tweet_body)

@@ -36,7 +36,10 @@ def tuneRandomForestNValues():
         2 ** 8,
         2 ** 9,
         2 ** 10,
-        1598,
+        1500,
+        1600,
+        1700,
+        1800,
         2 ** 11,
         2 ** 12,
         2 ** 13,
@@ -117,25 +120,25 @@ def runFineTunedRandomForest():
     machineLearning.runRegressor(bestRegressor, "randomForest", jsonFileNames)
 
 
-# tuneRandomForestNValues()
+tuneRandomForestNValues()
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
 decentNValue = 1598
 
-bestParams = tuneRandomForestParametersIndividually(decentNValue)
-print ''
-print ''
-print 'here are all possible best parameters'
-print bestParams
-print ''
-print ''
-
-bestParams = tuneRandomForestParameters(decentNValue, bestParams)
-print ''
-print ''
-print 'here are actual best parameters'
-print bestParams
+# bestParams = tuneRandomForestParametersIndividually(decentNValue)
+# print ''
+# print ''
+# print 'here are all possible best parameters'
+# print bestParams
+# print ''
+# print ''
+#
+# bestParams = tuneRandomForestParameters(decentNValue, bestParams)
+# print ''
+# print ''
+# print 'here are actual best parameters'
+# print bestParams
 
 
 # runFineTunedRandomForest()
