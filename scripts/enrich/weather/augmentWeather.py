@@ -53,7 +53,7 @@ def enrichWithWeather(location_name, coordinates):
     }
     locationWeatherDictionary = {}
     print 'Getting weather data'
-    if type(coordinates) == str:
+    if type(coordinates) == unicode:
         # weather = None
         weather = getNewWeather.getWeatherForCoordinates(coordinates)
         locationWeatherDictionary[location_name] = weather
@@ -74,8 +74,12 @@ def enrichWithWeather(location_name, coordinates):
                 print "Adding weather data: ", count
             count = count + 1
 
-            datetime = dataObject['created']
-            city_ = dataObject['city']
+            if 'created' in dataObject:
+                datetime = dataObject['created']
+                city_ = dataObject['city']
+            else:
+                datetime = dataObject['created_at']['$date']
+                city_ = dataObject['location']
             try:
                 place = actualCityNameMap[city_]
                 weather = locationWeatherDictionary[place]

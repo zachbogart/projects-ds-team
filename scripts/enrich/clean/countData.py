@@ -19,14 +19,14 @@ def countAllPlaces():
             cityName = place["name"]
             cityProperName = place["properName"]
 
-
             if cityDataExists(cityName):
-                placeCounts.append((cityProperName, countData(cityName)))
+                placeCounts.append((cityProperName, countGroupData(cityName)))
             else:
                 print 'No data file found for: ', cityProperName
         placeCountsSorted = sorted(((v, k) for k, v in placeCounts), reverse=True)
         for key, value in placeCountsSorted:
             print value + ': ' + str(key)
+
 
 def countData(cityName):
     inputPath = utils.getFullPathFromDataFileName(cityName + '.json')
@@ -34,13 +34,21 @@ def countData(cityName):
         dataEntries = json.load(data_file)
         return len(dataEntries)
 
+
+def countGroupData(cityName):
+    inputPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment_clean_grouped.json')
+    with open(inputPath) as data_file:
+        dataEntries = json.load(data_file)
+        return len(dataEntries)
+
+
 def countRedditData():
-    inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather.json')
-    # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments.json')
+    # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather.json')
+    inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather_sentiment_clean_grouped.json')
     dataEntries = json.load(open(inputPath))
     counts = {}
     for dataEntry in dataEntries:
-        city = dataEntry['city']
+        city = dataEntry['location']
         if city not in counts:
             counts[city] = {}
             counts[city]['count'] = 1
@@ -52,6 +60,7 @@ def countRedditData():
     print counts
     print len(dataEntries)
     return len(dataEntries)
+
 
 def cityDataExists(cityName):
     cityFileName = cityName + '.json'

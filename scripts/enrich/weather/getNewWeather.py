@@ -35,9 +35,7 @@ def getWeatherForCoordinates(gps):
     for t in range(may012015, nov302017, oneDayInSeconds):
         url = base_url + gps + ',' + str(t)
         day = tm.strftime('%Y-%m-%d', tm.localtime(t))
-        if day in presavedWeather:
-            data = presavedWeather[day]['hourly']
-        else:
+        if day not in presavedWeather:
             response = urllib.urlopen(url)
             if response.code == 403:
                 raise Exception("Weather API call received 403 Error")

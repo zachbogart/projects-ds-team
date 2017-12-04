@@ -20,10 +20,6 @@ def enrichWithSentiment(cityName):
     inputFilePath = utils.getFullPathFromDataFileName(cityName + '_weather.json')
     outputFilePath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment.json')
 
-    if sys.getdefaultencoding() != 'utf-8':
-        reload(sys)
-        sys.setdefaultencoding('utf-8')
-
     count = 0
     with open(inputFilePath) as data_file:
         data = json.load(data_file)
