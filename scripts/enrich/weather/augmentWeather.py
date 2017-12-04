@@ -42,14 +42,16 @@ def getWeatherAtDatetime(created_at, weather):
 def enrichWithWeather(location_name, coordinates):
     actualCityNameMap = {
         'chicago': 'chicago',
-        'asburyPark': 'asburyPark',
+        'asburypark': 'asburyPark',
         'denver': 'denver',
         'detroit': 'detroit',
         'houston': 'houston',
         'nyc': 'manhattan',
-        'Phoenix': 'phoenix',
-        'sanFrancisco': 'sanFrancisco',
+        'phoenix': 'phoenix',
+        'sanfrancisco': 'sanFrancisco',
+        'san francisco': 'sanFrancisco',
         'seattle': 'seattle',
+        'manhattan': 'manhattan'
     }
     locationWeatherDictionary = {}
     print 'Getting weather data'
@@ -73,21 +75,22 @@ def enrichWithWeather(location_name, coordinates):
             if count % 100000 == 0:
                 print "Adding weather data: ", count
             count = count + 1
-
             if 'created' in dataObject:
                 datetime = dataObject['created']
-                city_ = dataObject['city']
+                city_ = str(dataObject['city'].lower().strip())
             else:
                 datetime = dataObject['created_at']['$date']
-                city_ = dataObject['location']
-            try:
-                place = actualCityNameMap[city_]
-                weather = locationWeatherDictionary[place]
-                tweetWeather = getWeatherAtDatetime(datetime, weather)
+                if 'location' not in dataObject:
+                    dataObject['location'] = location_name
+                city_ = str(dataObject['location'].lower().strip())
+            # try:
+            place = actualCityNameMap[city_]
+            weather = locationWeatherDictionary[place]
+            tweetWeather = getWeatherAtDatetime(datetime, weather)
 
-                dataObject.update(tweetWeather)
-            except:
-                print city_
+            dataObject.update(tweetWeather)
+            # except:
+            #     print city_
 
         outputPath = utils.getFullPathFromDataFileName(location_name + '_weather.json')
         print 'Saving file: ', outputPath
