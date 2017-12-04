@@ -19,7 +19,6 @@ featureColumnNames = [
     'dewPoint',
     # 'followers',
     # 'location',
-    'windBearing',
     # 'location',
     # 'local_datetime',
     # 'friends_count',

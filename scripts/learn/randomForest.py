@@ -1,5 +1,7 @@
 import numpy as np
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import BaggingRegressor
 
 from scripts.learn import machineLearning
 from scripts.learn.machineLearning import tuneNValue
@@ -9,8 +11,8 @@ from scripts.learn.machineLearning import tuneNValue
 # ______________________________________________________
 #
 # Create a basic classifier
-classifier = RandomForestRegressor(random_state=43)
-classifierName = "randomForest"  # No spaces, this will be a file name
+classifier = BaggingRegressor(random_state=43)
+classifierName = "BaggingRegressor"  # No spaces, this will be a file name
 
 # Add the names of all data files you want to use to this list
 jsonFileNames = [
@@ -27,7 +29,7 @@ jsonFileNames = [
 
 # We want to see how long it will take to train our classifier
 # This will make a file called <classifierName>_number_data_points.csv
-def tuneRandomForestNValues():
+def tuneBaggingNValues():
     nValues = [
         2 ** 4,
         2 ** 5,
@@ -49,16 +51,15 @@ def tuneRandomForestNValues():
 # WHAT ARE THE BEST VALUES OF EACH PARAMETER?
 # ______________________________________________________
 #
-def tuneRandomForestParametersIndividually(decentNValues):
     # This should be a list of all your parameters with a wide range of possible values
+def tuneBaggingParametersIndividually(decentNValues):
     parameterGrid = {
-        "n_estimators": np.arange(10, 500, 40),
-        "max_depth": np.arange(1, 14, 1),
-        "min_samples_split": np.arange(2, 203, 10),
-        "min_samples_leaf": np.arange(1, 81, 4),
-        "max_leaf_nodes": np.arange(2, 20, 1),
-        "min_weight_fraction_leaf": np.arange(0.1, 0.4, 0.1),
-        "max_features": ["auto", "sqrt", "log2"]
+        'n_estimators': [50, 100],
+        'max_samples': [50,100],
+        'max_features': [5, 10],
+        'bootstrap': [True, False],
+        'bootstrap_features': [False, True],
+        'warm_start': [False, True],
     }
 
     threeBestParams = machineLearning.tuneParametersIndividually(parameterGrid, classifierName, classifier,
@@ -73,16 +74,15 @@ def tuneRandomForestParametersIndividually(decentNValues):
 #
 
 # Fill this grid with only the best parameter values, as every single combination will be run
-def tuneRandomForestParameters(decentNValues, parameterGrid):
-    # parameterGrid = {
-    #     "n_estimators": [20, 35, 110],
-    #     "max_depth": [3, 4, 2],
-    #     "min_samples_split": [130, 66, 42],
-    #     "min_samples_leaf": [59, 47, 53],
-    #     "max_leaf_nodes": [18, 20, 4],
-    #     "min_weight_fraction_leaf": [0.2, 0.1, 0.4],
-    #     "max_features": ["auto", "sqrt", "log2"]
-    # }
+def tuneBaggingParameters(decentNValues, parameterGrid):
+    parameterGrid = {
+    'n_estimators': [100],
+    'max_samples': [100],
+    'max_features': [5],
+    'bootstrap': [True],
+    'bootstrap_features': [True],
+    'warm_start': [True],
+    }
 
     # parameterGrid = {
     #     "n_estimators": [5, 330],
@@ -102,8 +102,8 @@ def tuneRandomForestParameters(decentNValues, parameterGrid):
 # RUN THE MODEL WITH BEST PARAMETERS
 # ______________________________________________________
 #
-def runFineTunedRandomForest():
-    bestRegressor = RandomForestRegressor(
+def runFineTunedBagging():
+    bestRegressor = BaggingRegressor(
         n_estimators=20,
         max_depth=2,
         min_samples_split=42,
@@ -114,16 +114,16 @@ def runFineTunedRandomForest():
         random_state=43,
     )
 
-    machineLearning.runRegressor(bestRegressor, "randomForest", jsonFileNames)
+    machineLearning.runRegressor(bestRegressor, "bagging", jsonFileNames)
 
 
-# tuneRandomForestNValues()
+tuneBaggingNValues()
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
-decentNValue = 1598
+decentNValue = 200
 
-bestParams = tuneRandomForestParametersIndividually(decentNValue)
+bestParams = tuneBaggingParametersIndividually(decentNValue)
 print ''
 print ''
 print 'here are all possible best parameters'
@@ -131,11 +131,13 @@ print bestParams
 print ''
 print ''
 
-bestParams = tuneRandomForestParameters(decentNValue, bestParams)
-print ''
-print ''
-print 'here are actual best parameters'
-print bestParams
+# bestParams = tuneBaggingParameters(decentNValue, bestParams)
+# print ''
+# print ''
+# print 'here are actual best parameters'
+# print bestParams
 
 
-# runFineTunedRandomForest()
+# runFineTunedBagging()
+
+
