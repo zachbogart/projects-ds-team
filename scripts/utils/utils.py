@@ -1,5 +1,6 @@
 import os
 
+import time
 from bson import json_util
 from pymongo import MongoClient
 import json
@@ -62,3 +63,6 @@ def getFullPathFromResourceFileName(resourceFileName):
 
 def getFullPathFromResultFileName(resourceFileName):
     return RESULT_DIRECTORY + '/' + resourceFileName
+
+def epochTimeToString(epoch):
+    return time.strftime('%Y-%m-%d %H', time.localtime(epoch))

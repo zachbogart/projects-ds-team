@@ -14,14 +14,7 @@ classifierName = "randomForest"  # No spaces, this will be a file name
 
 # Add the names of all data files you want to use to this list
 jsonFileNames = [
-    'chicago_weather_sentiment_clean_grouped.json',
-    'denver_weather_sentiment_clean_grouped.json',
-    'detroit_weather_sentiment_clean_grouped.json',
-    'houston_weather_sentiment_clean_grouped.json',
-    'manhattan_weather_sentiment_clean_grouped.json',
-    'phoenix_weather_sentiment_clean_grouped.json',
-    'sanFrancisco_weather_sentiment_clean_grouped.json',
-    'seattle_weather_sentiment_clean_grouped.json',
+    'reddit/allRedditComments_weather_sentiment_clean_grouped.json',
 ]
 
 
@@ -36,13 +29,14 @@ def tuneRandomForestNValues():
         2 ** 8,
         2 ** 9,
         2 ** 10,
-        1598,
         2 ** 11,
         2 ** 12,
         2 ** 13,
+        2 ** 14,
+        2 ** 15,
     ]
 
-    tuneNValue(nValues, classifier, classifierName, jsonFileNames)
+    tuneNValue(nValues, classifier, classifierName, jsonFileNames, dataSource='reddit')
 
 
 # ______________________________________________________
@@ -63,7 +57,7 @@ def tuneRandomForestParametersIndividually(decentNValues):
 
     threeBestParams = machineLearning.tuneParametersIndividually(parameterGrid, classifierName, classifier,
                                                                  jsonFileNames,
-                                                                 decentNValue, 2)
+                                                                 decentNValue, 2, dataSource='reddit')
     return threeBestParams
 
 
@@ -94,7 +88,8 @@ def tuneRandomForestParameters(decentNValues, parameterGrid):
     #     "max_features": ["auto", "log2"]
     # }
 
-    bestParams = machineLearning.tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue)
+    bestParams = machineLearning.tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue,
+                                                dataSource='reddit')
     return bestParams
 
 
@@ -104,24 +99,24 @@ def tuneRandomForestParameters(decentNValues, parameterGrid):
 #
 def runFineTunedRandomForest():
     bestRegressor = RandomForestRegressor(
-        n_estimators=20,
+        n_estimators=330,
         max_depth=2,
-        min_samples_split=42,
-        min_samples_leaf=47,
+        min_samples_split=192,
+        min_samples_leaf=77,
         max_leaf_nodes=4,
         min_weight_fraction_leaf=.2,
-        max_features="auto",
+        max_features="log2",
         random_state=43,
     )
 
-    machineLearning.runRegressor(bestRegressor, "randomForest", jsonFileNames)
+    machineLearning.runRegressor(bestRegressor, "randomForest", jsonFileNames, dataSource='reddit')
 
 
 # tuneRandomForestNValues()
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
-decentNValue = 1598
+decentNValue = 10000
 
 bestParams = tuneRandomForestParametersIndividually(decentNValue)
 print ''

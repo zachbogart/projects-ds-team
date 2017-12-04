@@ -34,10 +34,29 @@ def countData(cityName):
         dataEntries = json.load(data_file)
         return len(dataEntries)
 
+def countRedditData():
+    inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather.json')
+    # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments.json')
+    dataEntries = json.load(open(inputPath))
+    counts = {}
+    for dataEntry in dataEntries:
+        city = dataEntry['city']
+        if city not in counts:
+            counts[city] = {}
+            counts[city]['count'] = 1
+            counts[city]['weatherCount'] = 1
+        else:
+            counts[city]['count'] = counts[city]['count'] + 1
+            if 'temperature' in dataEntry:
+                counts[city]['weatherCount'] = counts[city]['weatherCount'] + 1
+    print counts
+    print len(dataEntries)
+    return len(dataEntries)
+
 def cityDataExists(cityName):
     cityFileName = cityName + '.json'
     cityFilePath = utils.getFullPathFromDataFileName(cityFileName)
     return os.path.isfile(cityFilePath)
 
 
-countAllPlaces()
+countRedditData()

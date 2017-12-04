@@ -1,7 +1,7 @@
 import json
 
 import os
-
+import pandas as pd
 import time
 
 from scripts.enrich.clean import clean
@@ -26,17 +26,17 @@ def enrichAllPlaces():
             if cityDataExists(cityName):
                 print 'City Data found for: ', cityProperName
 
-                # # Enrich with weather data
-                # print 'Enriching with Weather Data'
-                # augmentWeather.enrichWithWeather(cityName, coordinates)
+                # Enrich with weather data
+                print 'Enriching with Weather Data'
+                augmentWeather.enrichWithWeather(cityName, coordinates)
 
-                # # Enrich with sentiment
-                # print 'Enriching with Sentiment'
-                # sentiment.enrichWithSentiment(cityName)
-                #
-                # # Clean data
-                # print 'Cleaning Data'
-                # clean.clean(cityName)
+                # Enrich with sentiment
+                print 'Enriching with Sentiment'
+                sentiment.enrichWithSentiment(cityName)
+
+                # Clean data
+                print 'Cleaning Data'
+                clean.clean(cityName)
 
                 # Group Data
                 print 'Grouping Data'
@@ -46,11 +46,46 @@ def enrichAllPlaces():
                 print 'No data file found for: ', cityProperName
 
 
+def enrichAllRedditPlaces():
+    with open(utils.getFullPathFromDataFileName('places.json')) as data_file:
+        places = json.load(data_file)
+        placeCoordinateDictionary = {}
+        for place in places:
+            cityName = place["name"]
+            cityProperName = place["properName"]
+            coordinates = place["coordinates"]
+            placeCoordinateDictionary[cityName] = str(coordinates)
+
+        print ''
+        print ''
+        print 'About to enrich all reddit data'
+
+        fileName = 'reddit/allRedditComments'
+
+        # # Enrich with weather data
+        # print 'Enriching with Weather Data'
+        # augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
+
+        # # Enrich with sentiment
+        # print 'Enriching with Sentiment'
+        # sentiment.enrichWithSentiment(fileName)
+
+        # # Clean data
+        # print 'Cleaning Data'
+        # clean.clean(fileName)
+
+        # Group Data
+        print 'Grouping Data'
+        groupDataByHour(fileName)
+
+
 def groupDataByHour(cityName):
     inputPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment_clean.json')
     outputPath = utils.getFullPathFromDataFileName(cityName + '_weather_sentiment_clean_grouped.json')
+    print 'Opening data from: ', inputPath
     with open(inputPath) as data_file:
         dataEntries = json.load(data_file)
+        print 'Got data from: ', inputPath
 
         count = 0
         groupedData = {}
@@ -64,9 +99,9 @@ def groupDataByHour(cityName):
             # twitterTime = dataEntry['time']
             # timeHour = time.strftime('%Y-%m-%d %H', time.localtime(twitterTime))
             # timeHour2 = time.strftime('%Y-%m-%d %I', time.localtime(twitterTime))
-            timeHour = time.strftime('%Y-%m-%d %H', time.localtime(dataEntry['created_at']['$date'] / 1e3))
+            timeHour = time.strftime('%Y-%m-%d %H', time.localtime(dataEntry['created']))
             if timeHour in groupedData:
-                oldCount = groupedData[timeHour]['num_tweets']
+                oldCount = groupedData[timeHour]['num_data']
                 newCount = oldCount + 1.0
 
                 oldSentimentAverageScore = groupedData[timeHour]['sentiment_percent_positive']
@@ -77,7 +112,7 @@ def groupDataByHour(cityName):
                 newSentimentAverage = ((oldSentimentAverage * oldCount) + sentiment) / newCount
                 groupedData[timeHour]['sentiment_average'] = newSentimentAverage
 
-                groupedData[timeHour]['num_tweets'] = newCount
+                groupedData[timeHour]['num_data'] = newCount
 
             else:
                 weatherColumnNames = [
@@ -100,21 +135,25 @@ def groupDataByHour(cityName):
                 ]
                 newDataEntry = {
                     'timeHour': timeHour,
-                    'created_at': dataEntry['created_at'],
+                    'created': dataEntry['created'],
                     'time': dataEntry['time'],
-                    'location': dataEntry['location'],
                     'sentiment_average': sentimentScore,
                     'sentiment_percent_positive': sentiment,
-                    'num_tweets': 1.0
+                    'num_data': 1.0
                 }
+                if 'location' in dataEntry:
+                    newDataEntry['location'] = dataEntry['location']
+                if 'city' in dataEntry:
+                    newDataEntry['location'] = dataEntry['city']
                 for weatherColumn in weatherColumnNames:
                     newDataEntry[weatherColumn] = dataEntry[weatherColumn]
                 groupedData[timeHour] = newDataEntry
 
+        print 'Saving file: ', outputPath
+        print '# values: ', str(len(groupedData))
         with open(outputPath, 'w') as outfile:
             groupedDataValues = groupedData.values()
             json.dump(groupedDataValues, outfile)
-            print str(len(groupedDataValues)) + ' values'
 
         print 'Saved file: ', outputPath
 
@@ -125,4 +164,6 @@ def cityDataExists(cityName):
     return os.path.isfile(cityFilePath)
 
 
-enrichAllPlaces()
+# redditCsvToJson()
+# enrichAllPlaces()
+enrichAllRedditPlaces()

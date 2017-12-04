@@ -296,7 +296,7 @@ def saveResultsAsCSV(parameterResults, regressorName, additionalName):
 def evaluateParameter(regressor, trainData, trainLabels, parameter, parameterOptions):
     parameterGrid = {parameter: parameterOptions}
 
-    grid_search = GridSearchCV(regressor, param_grid=parameterGrid, verbose=1)
+    grid_search = GridSearchCV(regressor, param_grid=parameterGrid, verbose=1, cv=8)
     grid_search.fit(trainData, trainLabels)
 
     resultsDict = grid_search.cv_results_
@@ -308,7 +308,7 @@ def evaluateParameter(regressor, trainData, trainLabels, parameter, parameterOpt
 
 def evaluateParameters(regressor, trainData, trainLabels, parameterGrid):
     print "Running Grid Search"
-    grid_search = GridSearchCV(regressor, param_grid=parameterGrid, verbose=1)
+    grid_search = GridSearchCV(regressor, param_grid=parameterGrid, verbose=1, cv=8)
     grid_search.fit(trainData, trainLabels)
 
     resultsDict = grid_search.cv_results_
