@@ -335,22 +335,34 @@ def saveResultsFromTrainedClassifier(regressor, regressorName, trainData, trainL
     result['regressorType'] = str(type(regressor))
 
     predictions = regressor.predict(testData)
+    trainPredictions = regressor.predict(trainData)
     result['actualVsPrediction'] = zip(testLabels, predictions.tolist())
 
     # trainAccuracy = metrics.accuracy_score(trainLabels, regressor.predict(trainData))
     # testAccuracy = metrics.accuracy_score(testLabels, predictions)
-    explained_variance = metrics.explained_variance_score(testLabels, predictions)
-    neg_mean_absolute_error = metrics.mean_absolute_error(testLabels, predictions)
-    neg_mean_squared_error = metrics.mean_squared_error(testLabels, predictions)
-    neg_median_absolute_error = metrics.median_absolute_error(testLabels, predictions)
-    r2 = metrics.r2_score(testLabels, predictions)
     # result['trainAccuracy'] = trainAccuracy
     # result['testAccuracy'] = testAccuracy
-    result['explained_variance'] = explained_variance
-    result['neg_mean_absolute_error'] = neg_mean_absolute_error
-    result['neg_mean_squared_error'] = neg_mean_squared_error
-    result['neg_median_absolute_error'] = neg_median_absolute_error
-    result['r2'] = r2
+    testExplained_variance = metrics.explained_variance_score(testLabels, predictions)
+    testNeg_mean_absolute_error = metrics.mean_absolute_error(testLabels, predictions)
+    testNeg_mean_squared_error = metrics.mean_squared_error(testLabels, predictions)
+    testNeg_median_absolute_error = metrics.median_absolute_error(testLabels, predictions)
+    testR2 = metrics.r2_score(testLabels, predictions)
+    result['testExplained_variance'] = testExplained_variance
+    result['testNeg_mean_absolute_error'] = testNeg_mean_absolute_error
+    result['testNeg_mean_squared_error'] = testNeg_mean_squared_error
+    result['testNeg_median_absolute_error'] = testNeg_median_absolute_error
+    result['testR2'] = testR2
+
+    trainExplained_variance = metrics.explained_variance_score(trainLabels, trainPredictions)
+    trainNeg_mean_absolute_error = metrics.mean_absolute_error(trainLabels, trainPredictions)
+    trainNeg_mean_squared_error = metrics.mean_squared_error(trainLabels, trainPredictions)
+    trainNeg_median_absolute_error = metrics.median_absolute_error(trainLabels, trainPredictions)
+    trainR2 = metrics.r2_score(trainLabels, trainPredictions)
+    result['trainExplained_variance'] = trainExplained_variance
+    result['trainNeg_mean_absolute_error'] = trainNeg_mean_absolute_error
+    result['trainNeg_mean_squared_error'] = trainNeg_mean_squared_error
+    result['trainNeg_median_absolute_error'] = trainNeg_median_absolute_error
+    result['trainR2'] = trainR2
 
     # try:
     #     predictProbabilities = regressor.predict_proba(testData)
