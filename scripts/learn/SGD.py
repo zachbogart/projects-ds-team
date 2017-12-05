@@ -9,7 +9,7 @@ from scripts.learn.machineLearning import tuneNValue
 # ______________________________________________________
 #
 # Create a basic classifier
-regressor = SGDRegressor()
+regressor = SGDRegressor(random_state = 15)
 regressorName = "StochasticGradientDescent"  # No spaces, this will be a file name
 
 # Add the names of all data files you want to use to this list
@@ -58,9 +58,7 @@ def tuneSGDParametersIndividually(decentNValues):
         "l1_ratio": np.arange(0, 1, 0.1),
         "fit_intercept": [True, False],
         "shuffle": [True, False],
-        "verbose": np.arange(0, 100, 4),
         "epsilon": np.arange(0.00001, 100, 10),
-        "random_state": np.arange(0, 100, 4),
         "learning_rate": ['constant', 'optimal', 'invscaling']
     }
 
@@ -106,16 +104,14 @@ def tuneSGDParameters(decentNValues, parameterGrid):
 # ______________________________________________________
 #
 def runFineTunedSGD():
-    bestRegressor = RandomForestRegressor(
+    bestRegressor = SGDRegressor(
         loss = 'huber',
         penalty = 'l2',
-        alpha = 10.00001,
-        l1_ratio = 0.70000000000000007,
+        alpha = 20.00001,
+        l1_ratio = 0.0,
         fit_intercept = True,
-        shuffle = True,
-        verbose = 68,
+        shuffle = False,
         epsilon = 1.0000000000000001e-05,
-        random_state = 32,
         learning_rate = 'invscaling'
     )
 
@@ -126,7 +122,7 @@ def runFineTunedSGD():
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
-decentNValue = 1599
+decentNValue = 2000
 
 bestParams = tuneSGDParametersIndividually(decentNValue)
 print ''
@@ -142,5 +138,4 @@ print ''
 print 'here are actual best parameters'
 print bestParams
 
-
-# runFineTunedRandomForest()
+runFineTunedSGD()

@@ -9,7 +9,7 @@ from scripts.learn.machineLearning import tuneNValue
 # ______________________________________________________
 #
 # Create a basic classifier
-regressor = SGDRegressor()
+regressor = SGDRegressor(random_state = 15)
 regressorName = "StochasticGradientDescent"  # No spaces, this will be a file name
 
 # Add the names of all data files you want to use to this list
@@ -29,13 +29,19 @@ def tuneSGDNValues():
         2 ** 8,
         2 ** 9,
         2 ** 10,
-        1598,
         2 ** 11,
         2 ** 12,
         2 ** 13,
+        2 ** 14,
+        2 ** 15,
+        2 ** 16,
+        2 ** 17,
+        2 ** 18,
+        2 ** 19,
+        2 ** 20
     ]
 
-    tuneNValue(nValues, regressor, regressorName, jsonFileNames)
+    tuneNValue(nValues, regressor, regressorName, jsonFileNames, dataSource = 'reddit')
 
 
 # ______________________________________________________
@@ -51,15 +57,13 @@ def tuneSGDParametersIndividually(decentNValues):
         "l1_ratio": np.arange(0, 1, 0.1),
         "fit_intercept": [True, False],
         "shuffle": [True, False],
-        "verbose": np.arange(0, 100, 4),
         "epsilon": np.arange(0.00001, 100, 10),
-        "random_state": np.arange(0, 100, 4),
         "learning_rate": ['constant', 'optimal', 'invscaling']
     }
 
     threeBestParams = machineLearning.tuneParametersIndividually(parameterGrid, regressorName, regressor,
                                                                  jsonFileNames,
-                                                                 decentNValue, 2)
+                                                                 decentNValue, 2, dataSource = 'reddit')
     return threeBestParams
 
 
@@ -91,7 +95,7 @@ def tuneSGDParameters(decentNValues, parameterGrid):
     # }
 
     bestParams = machineLearning.tuneParameters(parameterGrid, regressorName, 
-                                                regressor, jsonFileNames, decentNValue)
+                                                regressor, jsonFileNames, decentNValue, dataSource = 'reddit')
     return bestParams
 
 
@@ -102,25 +106,23 @@ def tuneSGDParameters(decentNValues, parameterGrid):
 def runFineTunedSGD():
     bestRegressor = SGDRegressor(
         loss = 'huber',
-        penalty = 'elasticnet',
-        alpha = 10.00001,
-        l1_ratio = 0.60000000000000009,
+        penalty = 'l1',
+        alpha = 90.000010000000003,
+        l1_ratio = 0.0,
         fit_intercept = True,
-        shuffle = False,
-        verbose = 12,
+        shuffle = True,
         epsilon = 10.00001,
-        random_state = 56,
-        learning_rate = 'constant'
+        learning_rate = 'invscaling'
     )
 
-    machineLearning.runRegressor(bestRegressor, "SGD", jsonFileNames)
+    machineLearning.runRegressor(bestRegressor, "SGD", jsonFileNames, dataSource = 'reddit')
 
 
-# tuneSGDNValues()
+tuneSGDNValues()
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
-decentNValue = 10000
+decentNValue = 2**16
 
 bestParams = tuneSGDParametersIndividually(decentNValue)
 print ''
@@ -136,5 +138,4 @@ print ''
 print 'here are actual best parameters'
 print bestParams
 
-
-# runFineTunedRandomForest()
+runFineTunedSGD()
