@@ -29,13 +29,15 @@ def tuneKNeighborsNValues():
         2 ** 8,
         2 ** 9,
         2 ** 10,
-        1598,
         2 ** 11,
         2 ** 12,
         2 ** 13,
+        2 ** 14,
+        2 ** 15,
+        2 ** 16,
     ]
 
-    tuneNValue(nValues, classifier, classifierName, jsonFileNames)
+    tuneNValue(nValues, classifier, classifierName, jsonFileNames, dataSource='reddit')
 
 
 # ______________________________________________________
@@ -53,7 +55,7 @@ def tuneKNeighborsParametersIndividually(decentNValues):
 
     threeBestParams = machineLearning.tuneParametersIndividually(parameterGrid, classifierName, classifier,
                                                                  jsonFileNames,
-                                                                 decentNValue, 2)
+                                                                 decentNValue, 2, dataSource='reddit')
     return threeBestParams
 
 
@@ -71,7 +73,7 @@ def tuneKNeighborsParameters(decentNValues, parameterGrid):
         "algorithm": ['ball_tree', 'kd_tree'],
     }
 
-    bestParams = machineLearning.tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue)
+    bestParams = machineLearning.tuneParameters(parameterGrid, classifierName, classifier, jsonFileNames, decentNValue, dataSource='reddit')
     return bestParams
 
 
@@ -87,7 +89,7 @@ def runFineTunedKNeighbors():
         algorithm="ball_tree",
     )
 
-    machineLearning.runRegressor(bestRegressor, "kNeighborsReddit", jsonFileNames)
+    machineLearning.runRegressor(bestRegressor, "kNeighborsReddit", jsonFileNames, dataSource='reddit')
 
 
 tuneKNeighborsNValues()
