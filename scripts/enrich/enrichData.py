@@ -62,21 +62,21 @@ def enrichAllRedditPlaces():
 
         fileName = 'reddit/allRedditComments'
 
-        # # Enrich with weather data
-        # print 'Enriching with Weather Data'
-        # augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
+        # Enrich with weather data
+        print 'Enriching with Weather Data'
+        augmentWeather.enrichWithWeather(fileName, placeCoordinateDictionary)
 
         # Enrich with sentiment
-        # print 'Enriching with Sentiment'
-        # sentiment.enrichWithSentiment(fileName)
-        #
-        # # Clean data
-        # print 'Cleaning Data'
-        # clean.clean(fileName)
-        #
-        # # Group Data
-        # print 'Grouping Data'
-        # groupDataByHour(fileName)
+        print 'Enriching with Sentiment'
+        sentiment.enrichWithSentiment(fileName)
+
+        # Clean data
+        print 'Cleaning Data'
+        clean.clean(fileName)
+
+        # Group Data
+        print 'Grouping Data'
+        groupDataByHour(fileName)
 
 
 def groupDataByHour(cityName):
@@ -85,7 +85,7 @@ def groupDataByHour(cityName):
     print 'Opening data from: ', inputPath
     with open(inputPath) as data_file:
         dataEntries = json.load(data_file)
-        print 'Got data from: ', inputPath
+        print 'Data of length: ', len(dataEntries)
 
         count = 0
         groupedData = {}
@@ -93,26 +93,33 @@ def groupDataByHour(cityName):
             if count % 100000 == 0:
                 print "Grouping data -- count: ", count
             count = count + 1
+
             sentiment = dataEntry['sentiment']
             sentimentScore = float(dataEntry['sentimentScore'])
-
-            # twitterTime = dataEntry['time']
-            # timeHour = time.strftime('%Y-%m-%d %H', time.localtime(twitterTime))
-            # timeHour2 = time.strftime('%Y-%m-%d %I', time.localtime(twitterTime))
+            if 'location' in dataEntry:
+                location = dataEntry['location']
+            elif 'city' in dataEntry:
+                location = dataEntry['city']
             timeHour = time.strftime('%Y-%m-%d %H', time.localtime(dataEntry['created']))
-            if timeHour in groupedData:
-                oldCount = groupedData[timeHour]['num_data']
+            groupKey = makeUniqueKey(timeHour, location)
+            if groupKey in groupedData:
+                if groupedData[groupKey]['temperature'] != dataEntry['temperature']:
+                    print ''
+                    print 'This data entry is wrong'
+                    print dataEntry
+
+                oldCount = groupedData[groupKey]['num_data']
                 newCount = oldCount + 1.0
 
-                oldSentimentAverageScore = groupedData[timeHour]['sentiment_percent_positive']
+                oldSentimentAverageScore = groupedData[groupKey]['sentiment_percent_positive']
                 newSentimentAverageScore = ((oldSentimentAverageScore * oldCount) + sentimentScore) / newCount
-                groupedData[timeHour]['sentiment_percent_positive'] = newSentimentAverageScore
+                groupedData[groupKey]['sentiment_percent_positive'] = newSentimentAverageScore
 
-                oldSentimentAverage = groupedData[timeHour]['sentiment_average']
+                oldSentimentAverage = groupedData[groupKey]['sentiment_average']
                 newSentimentAverage = ((oldSentimentAverage * oldCount) + sentiment) / newCount
-                groupedData[timeHour]['sentiment_average'] = newSentimentAverage
+                groupedData[groupKey]['sentiment_average'] = newSentimentAverage
 
-                groupedData[timeHour]['num_data'] = newCount
+                groupedData[groupKey]['num_data'] = newCount
 
             else:
                 weatherColumnNames = [
@@ -141,12 +148,12 @@ def groupDataByHour(cityName):
                     'num_data': 1.0
                 }
                 if 'location' in dataEntry:
-                    newDataEntry['location'] = dataEntry['location']
-                if 'city' in dataEntry:
-                    newDataEntry['location'] = dataEntry['city']
+                    newDataEntry['location'] = location
+                elif 'city' in dataEntry:
+                    newDataEntry['location'] = location
                 for weatherColumn in weatherColumnNames:
                     newDataEntry[weatherColumn] = dataEntry[weatherColumn]
-                groupedData[timeHour] = newDataEntry
+                groupedData[groupKey] = newDataEntry
 
         print 'Saving file: ', outputPath
         print '# values: ', str(len(groupedData))
@@ -156,6 +163,8 @@ def groupDataByHour(cityName):
 
         print 'Saved file: ', outputPath
 
+def makeUniqueKey(timeHour, location):
+    return timeHour + location
 
 def cityDataExists(cityName):
     cityFileName = cityName + '.json'
@@ -164,5 +173,5 @@ def cityDataExists(cityName):
 
 
 # redditCsvToJson()
-enrichAllPlaces()
-# enrichAllRedditPlaces()
+# enrichAllPlaces()
+enrichAllRedditPlaces()

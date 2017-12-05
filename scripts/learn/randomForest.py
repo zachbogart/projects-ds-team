@@ -36,10 +36,6 @@ def tuneRandomForestNValues():
         2 ** 8,
         2 ** 9,
         2 ** 10,
-        1500,
-        1600,
-        1700,
-        1800,
         2 ** 11,
         2 ** 12,
         2 ** 13,
@@ -107,24 +103,24 @@ def tuneRandomForestParameters(decentNValues, parameterGrid):
 #
 def runFineTunedRandomForest():
     bestRegressor = RandomForestRegressor(
-        n_estimators=20,
-        max_depth=2,
-        min_samples_split=42,
-        min_samples_leaf=47,
-        max_leaf_nodes=4,
-        min_weight_fraction_leaf=.2,
-        max_features="auto",
+        n_estimators=250,
+        max_depth=3,
+        min_samples_split=202,
+        min_samples_leaf=33,
+        max_leaf_nodes=7,
+        min_weight_fraction_leaf=.1,
+        max_features="sqrt",
         random_state=43,
     )
 
-    machineLearning.runRegressor(bestRegressor, "randomForest", jsonFileNames)
+    machineLearning.runRegressor(bestRegressor, "randomForestPercentAverage", jsonFileNames)
 
 
 tuneRandomForestNValues()
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
-decentNValue = 1598
+decentNValue = 2000
 
 # bestParams = tuneRandomForestParametersIndividually(decentNValue)
 # print ''

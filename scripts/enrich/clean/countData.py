@@ -56,12 +56,17 @@ def countGroupData(cityName):
 
 
 def countRedditData():
+    # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments.json')
     # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather.json')
+    # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather_sentiment.json')
+    # inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather_sentiment_clean.json')
     inputPath = utils.getFullPathFromDataFileName('reddit/allRedditComments_weather_sentiment_clean_grouped.json')
     dataEntries = json.load(open(inputPath))
     counts = {}
+    # cityKey = 'city'
+    cityKey = 'location'
     for dataEntry in dataEntries:
-        city = dataEntry['location']
+        city = dataEntry[cityKey]
         if city not in counts:
             counts[city] = {}
             counts[city]['count'] = 1
@@ -81,4 +86,4 @@ def cityDataExists(cityName):
     return os.path.isfile(cityFilePath)
 
 
-countAllPlaces()
+countRedditData()
