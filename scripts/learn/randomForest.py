@@ -122,19 +122,19 @@ tuneRandomForestNValues()
 # We want an n with a high accuracy but low run time
 decentNValue = 2000
 
-# bestParams = tuneRandomForestParametersIndividually(decentNValue)
-# print ''
-# print ''
-# print 'here are all possible best parameters'
-# print bestParams
-# print ''
-# print ''
-#
-# bestParams = tuneRandomForestParameters(decentNValue, bestParams)
-# print ''
-# print ''
-# print 'here are actual best parameters'
-# print bestParams
+bestParams = tuneRandomForestParametersIndividually(decentNValue)
+print ''
+print ''
+print 'here are all possible best parameters'
+print bestParams
+print ''
+print ''
+
+bestParams = tuneRandomForestParameters(decentNValue, bestParams)
+print ''
+print ''
+print 'here are actual best parameters'
+print bestParams
 
 
-# runFineTunedRandomForest()
+runFineTunedRandomForest()

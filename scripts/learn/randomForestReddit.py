@@ -104,20 +104,20 @@ def tuneRandomForestParameters(decentNValues, parameterGrid):
 #
 def runFineTunedRandomForest():
     bestRegressor = RandomForestRegressor(
-        n_estimators=450,
-        max_depth=1,
+        n_estimators=490,
+        max_depth=3,
         min_samples_split=202,
-        min_samples_leaf=73,
-        max_leaf_nodes=2,
-        min_weight_fraction_leaf=.3,
-        max_features="auto",
+        min_samples_leaf=77,
+        max_leaf_nodes=5,
+        min_weight_fraction_leaf=.1,
+        max_features="sqrt",
         random_state=43,
     )
 
     machineLearning.runRegressor(bestRegressor, "randomForest", jsonFileNames, dataSource='reddit')
 
 
-# tuneRandomForestNValues()
+tuneRandomForestNValues()
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
@@ -138,4 +138,4 @@ print 'here are actual best parameters'
 print bestParams
 
 
-# runFineTunedRandomForest()
+runFineTunedRandomForest()
