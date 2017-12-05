@@ -38,6 +38,7 @@ featureColumnNames = [
     'precipProbability',
 ]
 
+# labelColumnName = 'sentiment_percent_positive'
 labelColumnName = 'sentiment_average'
 
 
@@ -173,7 +174,7 @@ def tuneNValue(nValues, regressor, regressorName, jsonFileNames, dataSource='twi
     results = []
     for nValue in nValues:
         sampledData = randomSampleDatapoints(finalData, nValue)
-        trainPercentage = .75
+        trainPercentage = .8
         trainData, testData, trainLabels, testLabels = train_test_split(sampledData[featureColumnNames],
                                                                         sampledData[labelColumnName],
                                                                         train_size=trainPercentage)

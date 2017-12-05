@@ -56,6 +56,8 @@ def fixWeatherData(dataEntry):
     # precipType: set value to 'NoPrecip'
     if 'precipType' not in dataEntry:
         dataEntry['precipType'] = 'NoPrecip'
+    if 'windSpeed' not in dataEntry:
+        dataEntry['windSpeed'] = 0.0
 
     dataEntry['precipTypeNone'] = dataEntry['precipType'] == 'NoPrecip'
     dataEntry['precipTypeRain'] = dataEntry['precipType'] == 'rain'

@@ -34,6 +34,11 @@ def tuneRandomForestNValues():
         2 ** 13,
         2 ** 14,
         2 ** 15,
+        2 ** 16,
+        2 ** 17,
+        2 ** 18,
+        2 ** 19,
+        2 ** 20,
     ]
 
     tuneNValue(nValues, classifier, classifierName, jsonFileNames, dataSource='reddit')
@@ -116,21 +121,21 @@ def runFineTunedRandomForest():
 
 # Pick a reasonable n value considering you'll be training the model a few hundred times
 # We want an n with a high accuracy but low run time
-decentNValue = 10000
+decentNValue = 30000
 
-# bestParams = tuneRandomForestParametersIndividually(decentNValue)
-# print ''
-# print ''
-# print 'here are all possible best parameters'
-# print bestParams
-# print ''
-# print ''
-#
-# bestParams = tuneRandomForestParameters(decentNValue, bestParams)
-# print ''
-# print ''
-# print 'here are actual best parameters'
-# print bestParams
+bestParams = tuneRandomForestParametersIndividually(decentNValue)
+print ''
+print ''
+print 'here are all possible best parameters'
+print bestParams
+print ''
+print ''
+
+bestParams = tuneRandomForestParameters(decentNValue, bestParams)
+print ''
+print ''
+print 'here are actual best parameters'
+print bestParams
 
 
-runFineTunedRandomForest()
+# runFineTunedRandomForest()
